@@ -381,3 +381,190 @@ export const routeConfig = {
   cacheTags: ['blog', 'post'],
 }
 ```
+
+---
+
+## 11) Blueprint de Escala Global (100k → 1M usuários ativos)
+
+Esta seção consolida uma arquitetura alvo para aplicações Nextify.js operando com alta concorrência global, baixa latência e resiliência.
+
+### 11.1 Arquitetura do Framework
+
+- **Core desacoplado por domínio**: `router`, `rendering-engine`, `runtime-node`, `runtime-edge`, `cache`, `observability`.
+- **Control plane + data plane**:
+  - **Control plane**: build, deploy, feature flags, políticas de cache, roteamento geográfico.
+  - **Data plane**: requests reais em POPs de edge, funções serverless, caches e banco de dados.
+- **Extensibilidade por plugins**: observabilidade, autenticação, otimização de mídia, integração com filas/event bus.
+
+### 11.2 Arquitetura de Runtime
+
+- **Runtime híbrido (Edge + Node + Serverless)** por rota:
+  - `runtime=edge`: middleware, autenticação de baixa latência, personalização geográfica, SSR leve.
+  - `runtime=node`: SSR pesado, agregações complexas, acesso a serviços internos.
+  - `runtime=serverless`: APIs elásticas sob demanda, workloads event-driven.
+- **Isolamento por tipo de workload**:
+  - Web tier (rendering)
+  - API tier (BFF/REST/GraphQL)
+  - Worker tier (jobs assíncronos: fila, reindex, thumbnails, webhooks)
+
+### 11.3 Estratégia de Cache (L0 → L4)
+
+- **L0: Browser cache** (`Cache-Control`, `ETag`, `stale-while-revalidate`).
+- **L1: CDN/Edge cache** para HTML estático, assets versionados, respostas ISR.
+- **L2: Full-route cache** no runtime (HTML + headers por rota).
+- **L3: Data cache** para fetches idempotentes (Redis/Memcached/KV global).
+- **L4: Query cache** no banco (read replicas + plano de índices).
+- **Invalidação por tags** (`product:123`, `category:shoes`) + revalidação por evento.
+- **Política anti-thundering herd**: request coalescing + lock de regeneração ISR.
+
+### 11.4 Estratégia de Rendering (SSR, SSG, ISR)
+
+- **SSG**: páginas institucionais, documentação, landing pages globais.
+- **ISR**: catálogos, blog, páginas de produto com atualização frequente.
+- **SSR streaming**: checkout, dashboards e páginas personalizadas com baixa tolerância a stale.
+- **Regra prática**:
+  - Conteúdo estável: SSG
+  - Conteúdo semi-dinâmico: ISR
+  - Conteúdo sensível ao usuário/tempo real: SSR
+
+### 11.5 Edge Rendering
+
+- Renderização no edge para reduzir RTT em regiões distantes.
+- Middleware de edge para:
+  - A/B testing
+  - georouting
+  - proteção bot/rate-limit inicial
+  - autenticação preliminar (JWT verify)
+- Fallback para região primária em caso de degradação local.
+
+### 11.6 Estratégia de CDN
+
+- **CDN multi-região com Anycast** e compressão Brotli/Gzip.
+- **Cache key canônica** (path + locale + device class + flags de experimentos).
+- **Versionamento de assets por hash** (`app.[contenthash].js`) para cache imutável.
+- **Purge seletivo por surrogate keys** para evitar invalidação global total.
+
+### 11.7 Estratégia de Observabilidade
+
+- **OpenTelemetry nativo** (trace end-to-end):
+  - span de edge middleware
+  - span de SSR render
+  - span de chamadas externas (DB, Redis, APIs)
+- **Logs estruturados** com correlation id (`trace_id`, `request_id`, `session_id`).
+- **Métricas por SLI**:
+  - Latência p50/p95/p99
+  - Taxa de erro por rota
+  - Cache hit ratio por camada
+  - Tempo de build/deploy
+
+### 11.8 Estratégia de Monitoramento
+
+- **Golden signals**: Latency, Traffic, Errors, Saturation.
+- **Synthetics globais** (smoke por região) + RUM real de usuários.
+- **Alertas inteligentes**:
+  - erro 5xx > limiar
+  - p95 acima do orçamento
+  - queda de hit ratio CDN/ISR
+  - aumento anormal de cold starts
+- **Runbooks + auto-remediação** (rollback, disable de feature flag, failover).
+
+### 11.9 Estratégia de Auto Scaling
+
+- **Horizontal autoscaling** baseado em:
+  - RPS
+  - CPU/memória
+  - event loop lag
+  - tempo de fila
+- **Serverless concurrency control** com limites por função/rota.
+- **Pré-aquecimento (pre-warm)** para rotas quentes em horários de pico.
+- **Escala orientada por previsão** (histórico + sazonalidade).
+
+### 11.10 Estratégia de Otimização de Bundle
+
+- Split por rota + split por componente crítico.
+- Tree-shaking agressivo e remoção de polyfills desnecessários.
+- Prioridade para **islands interativas** (menos JS inicial).
+- `priority hints`, `preload`, `preconnect` para recursos críticos.
+- Budget de bundle por rota com bloqueio no CI quando exceder limite.
+
+### 11.11 Balanceamento de Carga e Distribuição Global
+
+- **Global load balancing** (GeoDNS/Anycast) com roteamento para POP mais próximo.
+- **Regional load balancer** para distribuir em múltiplas AZs.
+- **Failover ativo-passivo/ativo-ativo** entre regiões.
+- Sessões idealmente stateless (token/cookies assinados) para facilitar realocação.
+
+### 11.12 Diagrama de Arquitetura (alto nível)
+
+```mermaid
+flowchart LR
+  U[Usuário] --> DNS[Anycast DNS]
+  DNS --> CDN[CDN Global / Edge POP]
+  CDN --> EDGE[Nextify Edge Runtime]
+  EDGE -->|cache miss| GLB[Global Load Balancer]
+  GLB --> R1[Região A - App Cluster]
+  GLB --> R2[Região B - App Cluster]
+
+  R1 --> N1[Node SSR / Serverless API]
+  R2 --> N2[Node SSR / Serverless API]
+
+  N1 --> REDIS[(Redis/KV Global Cache)]
+  N2 --> REDIS
+
+  N1 --> DB[(DB Primário + Read Replicas)]
+  N2 --> DB
+
+  N1 --> MQ[(Fila/Event Bus)]
+  N2 --> MQ
+
+  EDGE --> OBS[Telemetry Collector]
+  N1 --> OBS
+  N2 --> OBS
+```
+
+### 11.13 Fluxo de Requisição
+
+1. Usuário resolve DNS Anycast e entra no POP mais próximo.
+2. CDN tenta servir do cache (assets/HTML ISR/SSG).
+3. Em miss, middleware edge executa auth leve, georule e experimentação.
+4. Router decide estratégia (SSG/ISR/SSR) e runtime (edge/node).
+5. Runtime consulta cache de rota e cache de dados.
+6. Se necessário, renderiza (streaming SSR) e consulta DB/serviços.
+7. Resposta é comprimida, cacheada por política e devolvida.
+8. Traces, logs e métricas são emitidos para observabilidade.
+
+### 11.14 Pipeline de Build
+
+```mermaid
+flowchart LR
+  GIT[Git Push] --> CI[CI Pipeline]
+  CI --> LINT[Lint + Typecheck + Testes]
+  LINT --> BUILD[Build incremental SWC/Turbopack]
+  BUILD --> ANALYZE[Bundle Analyzer + Budgets]
+  ANALYZE --> ART[Artifact Versionado]
+  ART --> REG[Registry/Artifact Store]
+```
+
+### 11.15 Pipeline de Deploy
+
+```mermaid
+flowchart LR
+  REG[Artifact Store] --> STAGE[Deploy Canary]
+  STAGE --> SMOKE[Smoke + Synthetics]
+  SMOKE --> PROG[Progressive Rollout]
+  PROG --> FULL[Global Rollout]
+  FULL --> MON[Monitoramento SLO]
+  MON -->|falha| RB[Rollback automático]
+```
+
+### 11.16 Como sustentar 100k–1M usuários ativos sem degradação
+
+- **Distribuição geográfica real**: aproxima computação do usuário via edge POP.
+- **Cache-first architecture**: maximiza hit ratio e minimiza custo por request dinâmico.
+- **Rendering híbrido inteligente**: maioria das páginas via SSG/ISR; SSR apenas no que precisa.
+- **Escala horizontal automática**: capacidade sobe e desce por demanda em minutos/segundos.
+- **Desacoplamento assíncrono**: processos pesados saem do caminho síncrono da request.
+- **Observabilidade profunda + SRE playbooks**: detectar e corrigir regressões antes de efeito sistêmico.
+- **Deploy progressivo com rollback rápido**: evita incidentes globais por releases defeituosos.
+
+Resultado: com alta taxa de cache (ex.: 90%+ em CDN/edge), SSR otimizado para as rotas críticas e autoscaling agressivo, o Nextify.js consegue atender picos de 100k a 1M usuários ativos mantendo p95 controlado e disponibilidade elevada.

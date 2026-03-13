@@ -25,7 +25,7 @@ Nextify.js é um framework open source inspirado no melhor ecossistema React mod
 4. **Distribuição contínua**: conteúdo técnico, benchmark transparente e comunidade ativa.
 5. **Release process confiável**: changelog rigoroso, semver e canary releases.
 
-> A estratégia completa está na pasta [`docs/`](./docs) e no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+> A estratégia completa está na pasta [`docs/`](./docs), no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md) e no blueprint Big Tech [`docs/NEXTIFY_BIGTECH_BLUEPRINT.md`](./docs/NEXTIFY_BIGTECH_BLUEPRINT.md).
 
 ---
 

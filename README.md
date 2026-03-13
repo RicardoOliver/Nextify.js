@@ -3,7 +3,7 @@
 > O framework React para times que querem velocidade de desenvolvimento, performance de produção e arquitetura extensível por padrão.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
-[![npm version](https://img.shields.io/npm/v/nextify)](#)
+[![npm version](https://img.shields.io/npm/v/nextify-monorepo)](#)
 [![license](https://img.shields.io/github/license/nextifyjs/nextify)](#)
 [![Discord](https://img.shields.io/discord/000000000000000000?label=discord)](#)
 
@@ -136,18 +136,35 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 
 ## Como começar
 
+Instale o framework publicado no npm:
+
 ```bash
-npm install
-npm run build
+npm install nextify-monorepo
 ```
 
-Para criar uma app:
+Crie um arquivo `index.js`:
+
+```js
+const nextify = require("nextify-monorepo");
+
+nextify.start({
+  port: 3000,
+});
+```
+
+Depois execute:
 
 ```bash
-npx create-nextify@latest minha-app
-cd minha-app
+node index.js
+```
+
+ou:
+
+```bash
 npm run dev
 ```
+
+> Queremos evoluir para um fluxo com CLI (`create-nextify-app`) para onboarding em uma linha, no estilo `npx create-nextify-app minha-app`.
 
 ## Comunidade
 

@@ -1,0 +1,9 @@
+{
+  "name": "@nextify/dev-server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/devServer.js",
+    "build": "echo 'dev-server não requer build nesta PoC'"
+  }
+}

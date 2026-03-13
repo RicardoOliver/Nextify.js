@@ -1,0 +1,33 @@
+# Estrutura de Diretórios Open Source (Recomendada)
+
+```txt
+nextify.js/
+  .github/
+    ISSUE_TEMPLATE/
+      bug_report.md
+      feature_request.md
+    pull_request_template.md
+    workflows/
+      ci.yml
+      release.yml
+  docs/
+    COMMUNITY_STRATEGY.md
+    DEVELOPER_GUIDE.md
+    MARKETING_STRATEGY.md
+    RELEASE_STRATEGY.md
+    REPOSITORY_STRUCTURE.md
+    ROADMAP.md
+  examples/
+    blog/
+    ecommerce-storefront/
+    saas-dashboard/
+  packages/
+    build/
+    cli/
+    core/
+    dev-server/
+  ARCHITECTURE.md
+  CODE_OF_CONDUCT.md
+  CONTRIBUTING.md
+  README.md
+```

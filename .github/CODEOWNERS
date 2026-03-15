@@ -1,0 +1,5 @@
+# Donos por pacote
+/packages/core/ @nextify/core-maintainers
+/packages/cli/ @nextify/cli-maintainers
+/packages/build/ @nextify/build-maintainers
+/packages/dev-server/ @nextify/dev-server-maintainers

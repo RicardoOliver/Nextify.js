@@ -9,6 +9,7 @@ branches:
         strict: true
         contexts:
           - install
+          - commitlint
           - typecheck
           - test
           - lint

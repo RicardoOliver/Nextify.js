@@ -159,6 +159,7 @@ Transformar a estratégia em **execução verificável** em 30/60/90 dias, para 
 - Política de compatibilidade (Node/React/OS/Cloud).
 - Definição de canal LTS + janela de suporte.
 - Matriz de suporte documentada por versão.
+- Documento-base publicado em `docs/STABILITY_SUPPORT_POLICY.md`.
 
 **Critério de aceite**
 - Empresa consegue planejar upgrade sem surpresa de quebra.

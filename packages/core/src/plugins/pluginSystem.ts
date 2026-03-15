@@ -1,16 +1,60 @@
-export type NextifyPlugin = {
-  name: string;
-  setup: (ctx: { hooks: Map<string, Array<() => void>> }) => void;
+export type NextifyHookName = 'beforeRequest' | 'afterResponse' | 'buildStart' | 'buildEnd';
+
+export type NextifyPluginContext = {
+  registerHook: (hook: NextifyHookName, handler: () => void) => void;
 };
 
-export class PluginSystem {
-  private hooks = new Map<string, Array<() => void>>();
+export type NextifyPlugin = {
+  name: string;
+  setup: (ctx: NextifyPluginContext) => void;
+};
 
-  use(plugin: NextifyPlugin) {
-    plugin.setup({ hooks: this.hooks });
+export type PluginSystemOptions = {
+  maxPlugins?: number;
+  maxHooksPerPlugin?: number;
+};
+
+const VALID_HOOKS: NextifyHookName[] = ['beforeRequest', 'afterResponse', 'buildStart', 'buildEnd'];
+
+export class PluginSystem {
+  private hooks = new Map<NextifyHookName, Array<() => void>>();
+  private plugins = new Set<string>();
+  private readonly maxPlugins: number;
+  private readonly maxHooksPerPlugin: number;
+
+  constructor(options: PluginSystemOptions = {}) {
+    this.maxPlugins = options.maxPlugins ?? 30;
+    this.maxHooksPerPlugin = options.maxHooksPerPlugin ?? 10;
   }
 
-  runHook(name: string) {
+  use(plugin: NextifyPlugin) {
+    const name = plugin.name.trim();
+    if (!name) throw new Error('Plugin precisa ter nome não vazio');
+    if (this.plugins.has(name)) throw new Error(`Plugin duplicado: ${name}`);
+    if (this.plugins.size >= this.maxPlugins) throw new Error('Limite máximo de plugins excedido');
+
+    let registeredHooks = 0;
+
+    plugin.setup({
+      registerHook: (hook, handler) => {
+        if (!VALID_HOOKS.includes(hook)) throw new Error(`Hook inválido: ${hook}`);
+        if (registeredHooks >= this.maxHooksPerPlugin) {
+          throw new Error(`Plugin ${name} excedeu limite de hooks (${this.maxHooksPerPlugin})`);
+        }
+
+        const entries = this.hooks.get(hook) ?? [];
+        entries.push(handler);
+        this.hooks.set(hook, entries);
+        registeredHooks += 1;
+      }
+    });
+
+    this.plugins.add(name);
+  }
+
+  runHook(name: NextifyHookName) {
+    if (!VALID_HOOKS.includes(name)) throw new Error(`Hook inválido: ${name}`);
+
     const entries = this.hooks.get(name) ?? [];
     for (const fn of entries) fn();
   }

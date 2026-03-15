@@ -51,3 +51,9 @@
 - Nenhuma release sem documentação atualizada.
 - Nenhuma release major sem codemod/migração assistida.
 - Toda release deve possuir changelog rastreável e assinatura de responsáveis.
+
+## Gate de segurança para releases minor
+
+- Toda release `minor` deve anexar o checklist `docs/SECURITY_RUNTIME_CHECKLIST.md` preenchido nas release notes.
+- Itens sem evidência bloqueiam promoção para `latest`, exceto com aceite explícito de risco pelos responsáveis.
+- Quando houver mudança com impacto operacional, incluir notas de migração obrigatórias.

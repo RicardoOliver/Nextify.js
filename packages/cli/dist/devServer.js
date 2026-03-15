@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { createServer as createHttpServer } from 'node:http';
+import { pathToFileURL } from 'node:url';
 const PORT = Number(process.env.PORT ?? 3000);
 const PROJECT_ROOT = process.env.NEXTIFY_ROOT ?? process.cwd();
 const PAGES_DIR = path.join(PROJECT_ROOT, 'pages');
@@ -79,16 +80,17 @@ function buildHtmlShell(routePath) {
 export async function startDevServer(options = {}) {
     const root = options.root ?? PROJECT_ROOT;
     const port = options.port ?? PORT;
-    // Resolve vite e plugin-react a partir do projeto do usuário (node_modules local)
-    const vitePath = path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js');
-    const reactPluginPath = path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs');
+    // pathToFileURL converte C:\... para file:///C:/... — obrigatório no Windows
+    const vitePath = pathToFileURL(path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js')).href;
+    const reactPluginPath = pathToFileURL(path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs')).href;
     let createViteServer, react;
     try {
         ({ createServer: createViteServer } = await import(vitePath));
         ({ default: react } = await import(reactPluginPath));
     }
     catch (err) {
-        console.error('[nextify] Vite não encontrado. Rode: npm install vite @vitejs/plugin-react');
+        console.error('\n[nextify] Vite não encontrado. Rode dentro do projeto:\n');
+        console.error('  npm install vite @vitejs/plugin-react\n');
         console.error(err.message);
         process.exit(1);
     }
@@ -107,7 +109,8 @@ export async function startDevServer(options = {}) {
     const server = createHttpServer(async (req, res) => {
         const host = req.headers.host ?? `localhost:${port}`;
         const pathname = new URL(`http://${host}${req.url}`).pathname;
-        if (pathname.startsWith('/@') || pathname.startsWith('/node_modules') ||
+        if (pathname.startsWith('/@') ||
+            pathname.startsWith('/node_modules') ||
             /\.(js|ts|tsx|jsx|css|svg|png|ico|woff2?|map)$/.test(pathname)) {
             vite.middlewares(req, res, () => { res.statusCode = 404; res.end(); });
             return;

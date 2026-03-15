@@ -16,7 +16,25 @@
 - Pipeline de release com changelog, canary e checklist de promoção para `latest`.
 - Pacote inicial de documentação enterprise (compatibilidade, suporte, runbook de incidentes).
 
----
+
+## FAQ rápido (sobre "Enterprise Readiness")
+
+### "O desenvolvimento vai ser automático?"
+
+**Não.** O plano não significa que o projeto vai se desenvolver sozinho.
+
+"Enterprise Readiness" é um **nível de maturidade operacional e de engenharia**:
+- processos claros para construir, testar, revisar e publicar;
+- automações de CI/CD para reduzir erro humano;
+- critérios objetivos para aprovar releases;
+- segurança, observabilidade e governança para uso em empresas.
+
+Ou seja: há automação de partes do fluxo (testes, checks, release gates), mas a evolução do produto continua sendo conduzida pelo time mantenedor.
+
+### Então qual é o objetivo prático deste documento?
+
+Transformar a estratégia em **execução verificável** em 30/60/90 dias, para que empresas consigam adotar o framework com previsibilidade de qualidade, risco e suporte.
+
 
 ## 0–30 dias — Fundação de Confiabilidade (impacto mais alto)
 

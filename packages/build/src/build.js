@@ -2,6 +2,11 @@ import { readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const PERFORMANCE_BUDGET = {
+  maxSingleAssetKb: 170,
+  maxTotalJsKb: 350
+};
+
 export function collectJsAssets(dir) {
   try {
     return readdirSync(dir)
@@ -14,25 +19,22 @@ export function collectJsAssets(dir) {
 }
 
 export function evaluatePerformanceBudget(assets) {
-  const budget = {
-    maxSingleAssetKb: 170,
-    maxTotalJsKb: 350
-  };
-
   const totalKb = Number((assets.reduce((acc, asset) => acc + asset.size, 0) / 1024).toFixed(2));
-  const largest = assets.sort((a, b) => b.size - a.size)[0];
+  const largest = [...assets].sort((a, b) => b.size - a.size)[0];
   const largestKb = largest ? Number((largest.size / 1024).toFixed(2)) : 0;
 
   const violations = [];
-  if (largestKb > budget.maxSingleAssetKb) {
-    violations.push(`Maior asset JS (${largestKb}KB) excedeu limite de ${budget.maxSingleAssetKb}KB.`);
+  if (largestKb > PERFORMANCE_BUDGET.maxSingleAssetKb) {
+    violations.push(
+      `Maior asset JS (${largestKb}KB) excedeu limite de ${PERFORMANCE_BUDGET.maxSingleAssetKb}KB.`
+    );
   }
-  if (totalKb > budget.maxTotalJsKb) {
-    violations.push(`Total JS (${totalKb}KB) excedeu limite de ${budget.maxTotalJsKb}KB.`);
+  if (totalKb > PERFORMANCE_BUDGET.maxTotalJsKb) {
+    violations.push(`Total JS (${totalKb}KB) excedeu limite de ${PERFORMANCE_BUDGET.maxTotalJsKb}KB.`);
   }
 
   return {
-    budget,
+    budget: PERFORMANCE_BUDGET,
     totalKb,
     largestAssetKb: largestKb,
     status: violations.length ? 'fail' : 'pass',
@@ -55,6 +57,10 @@ export function runBuild(cwd = process.cwd()) {
 
   console.log('Build concluído. Artefatos em dist/.');
   console.log(`Performance budget: ${performanceBudget.status.toUpperCase()}.`);
+
+  if (performanceBudget.status === 'fail') {
+    throw new Error(`Build bloqueado por regressão crítica de performance: ${performanceBudget.violations.join(' ')}`);
+  }
 
   return performanceBudget;
 }

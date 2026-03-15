@@ -84,6 +84,8 @@ npm exec create-nextify -- minha-app
 - Estratégia de releases: [`docs/RELEASE_STRATEGY.md`](./docs/RELEASE_STRATEGY.md)
 - Contrato de estabilidade e suporte: [`docs/STABILITY_SUPPORT_POLICY.md`](./docs/STABILITY_SUPPORT_POLICY.md)
 - Comunidade: [`docs/COMMUNITY_STRATEGY.md`](./docs/COMMUNITY_STRATEGY.md)
+- SLOs, error budget e budget obrigatório em CI: [`docs/SLOS_AND_PERFORMANCE_BUDGET.md`](./docs/SLOS_AND_PERFORMANCE_BUDGET.md)
+- Relatórios mensais públicos de reliability: [`docs/reliability-reports/`](./docs/reliability-reports/)
 
 ## Comunidade
 

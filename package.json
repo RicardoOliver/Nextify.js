@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.8",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.0"
   },
   "description": "Nextify.js monorepo (public)"
 }

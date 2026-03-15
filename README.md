@@ -82,6 +82,7 @@ npm exec create-nextify -- minha-app
 - Guia de desenvolvimento: [`docs/DEVELOPER_GUIDE.md`](./docs/DEVELOPER_GUIDE.md)
 - Roadmap: [`docs/ROADMAP.md`](./docs/ROADMAP.md)
 - Estratégia de releases: [`docs/RELEASE_STRATEGY.md`](./docs/RELEASE_STRATEGY.md)
+- Contrato de estabilidade e suporte: [`docs/STABILITY_SUPPORT_POLICY.md`](./docs/STABILITY_SUPPORT_POLICY.md)
 - Comunidade: [`docs/COMMUNITY_STRATEGY.md`](./docs/COMMUNITY_STRATEGY.md)
 
 ## Comunidade

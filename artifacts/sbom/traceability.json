@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-03-15T17:33:18.714Z",
+  "lockfile": {
+    "path": null,
+    "sha256": null,
+    "note": "Nenhum lockfile encontrado no repositório durante a geração."
+  },
+  "attestations": [
+    {
+      "statement": "SBOM generated from current workspace dependency graph.",
+      "evidence": [
+        "npm ls --all --json",
+        "npm ls --omit=dev --all --json"
+      ]
+    }
+  ]
+}

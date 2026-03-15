@@ -17,7 +17,9 @@
     "validate": "npm run lint && npm run format:check && npm run typecheck && npm run test",
     "commitlint": "node scripts/validate-commits.mjs",
     "example:reference": "node examples/reference-app/server.mjs",
-    "test:e2e": "npm --workspace @nextify/core run test -- tests/referenceApp.e2e.test.ts"
+    "test:e2e": "npm --workspace @nextify/core run test -- tests/referenceApp.e2e.test.ts",
+    "sbom:generate": "node scripts/generate-sbom.mjs",
+    "audit:internal": "node scripts/run-internal-audit.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.8",

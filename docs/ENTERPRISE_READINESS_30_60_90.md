@@ -167,9 +167,9 @@ Transformar a estratégia em **execução verificável** em 30/60/90 dias, para 
 ### 2) Compliance e governança
 
 **Entregáveis**
-- Runbook de incidentes (sev levels, comunicação, responsabilidades).
-- SBOM e rastreabilidade de dependências para auditoria.
-- Processo formal de RFC para mudanças breaking.
+- Runbook de incidentes (sev levels, comunicação, responsabilidades) em `docs/INCIDENT_RESPONSE_RUNBOOK.md`.
+- SBOM e rastreabilidade de dependências para auditoria em `docs/SBOM_DEPENDENCY_TRACEABILITY.md`.
+- Processo formal de RFC para mudanças breaking em `docs/RFC_BREAKING_CHANGES_PROCESS.md` + template em `docs/templates/RFC_TEMPLATE.md`.
 
 **Critério de aceite**
 - Auditoria interna básica executável por terceiros.

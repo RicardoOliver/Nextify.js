@@ -1,6 +1,6 @@
 {
   "name": "create-nextify",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "CLI para criar aplicações Nextify.js",
   "type": "module",
   "bin": {

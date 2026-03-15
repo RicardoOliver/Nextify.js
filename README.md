@@ -3,7 +3,11 @@
 > O framework React para times que querem velocidade de desenvolvimento, performance de produção e arquitetura extensível por padrão.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
+
 [![npm package](https://img.shields.io/npm/v/create-nextify)](https://www.npmjs.com/package/create-nextify)
+
+[![npm status](https://img.shields.io/badge/npm-private-orange)](#)
+
 [![license](https://img.shields.io/github/license/nextifyjs/nextify)](#)
 [![Discord](https://img.shields.io/discord/000000000000000000?label=discord)](#)
 
@@ -156,6 +160,7 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 
 ## Como começar
 
+
 Este é um **monorepo público** do Nextify.js para desenvolvimento colaborativo global.
 
 Para criar um novo projeto Nextify (fluxo recomendado):
@@ -180,6 +185,34 @@ cd nextify
 npm install
 npm run build
 npm run dev
+=======
+Atualmente, este repositório é um **monorepo privado** para desenvolvimento local (veja `"private": true` no `package.json`).
+
+Se você quer usar o boilerplate open-source da equipe Nextify, utilize:
+
+```bash
+bun create saasfly
+# ou
+npx create-saasfly@latest
+```
+
+Para contribuir com este repositório localmente:
+
+```bash
+npm install
+```
+
+Para iniciar o ambiente de desenvolvimento do monorepo:
+
+```bash
+npm run dev
+```
+
+Para testar o gerador de projeto local (`create-nextify`), execute:
+
+```bash
+npm exec create-nextify -- minha-app
+
 ```
 
 ## Comunidade

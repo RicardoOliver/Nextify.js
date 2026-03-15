@@ -3,7 +3,7 @@
 > O framework React para times que querem velocidade de desenvolvimento, performance de produção e arquitetura extensível por padrão.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
-[![npm version](https://img.shields.io/npm/v/nextify-monorepo)](#)
+[![npm status](https://img.shields.io/badge/npm-private-orange)](#)
 [![license](https://img.shields.io/github/license/nextifyjs/nextify)](#)
 [![Discord](https://img.shields.io/discord/000000000000000000?label=discord)](#)
 
@@ -16,6 +16,26 @@ Nextify.js é um framework open source inspirado no melhor ecossistema React mod
 - 🧠 **Performance-first**: SSR streaming, SSG, ISR e estratégia de cache inteligente.
 - 🌍 **Pronto para Node + Edge**: output separado por target e adaptadores.
 - 🤝 **OSS-friendly desde o dia 1**: roadmap público, governança, good first issues e templates.
+
+## Meta global: superar o padrão atual de DX no ecossistema React
+
+Queremos que o Nextify.js seja escolhido por desenvolvedores do mundo todo não por marketing, mas por **resultado mensurável**.
+
+### Princípios de produto (não-negociáveis)
+
+- **Mais rápido para construir**: setup inicial, hot reload e build incremental mais rápidos em projetos reais.
+- **Mais simples de operar**: observabilidade nativa, erros acionáveis e deploy previsível em múltiplos provedores.
+- **Mais aberto para evoluir**: APIs estáveis, RFC pública e arquitetura plugável para comunidade e empresas.
+- **Mais seguro por padrão**: security headers, hardening de runtime e políticas claras de disclosure.
+
+### Métricas públicas que vamos perseguir
+
+- Tempo de `create -> first commit` em menos de 10 minutos para novos usuários.
+- Cold build e rebuild incremental com benchmark público em apps SaaS, conteúdo e e-commerce.
+- Tempo médio de resposta em issues de comunidade abaixo de 48h.
+- Taxa de regressão de release monitorada com canary + changelog verificável.
+
+> Se uma funcionalidade não melhora DX, performance, confiabilidade ou adoção global, ela não entra na prioridade.
 
 ## TL;DR da estratégia para escalar no GitHub
 
@@ -96,7 +116,7 @@ Leia o arquivo [`CONTRIBUTING.md`](./CONTRIBUTING.md) para:
 
 ## Roadmap público
 
-Roadmap por fases com entregas trimestrais: [`docs/ROADMAP.md`](./docs/ROADMAP.md).
+Roadmap por fases com entregas trimestrais e metas mensuráveis: [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
 ## Estratégia de releases
 
@@ -112,9 +132,9 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 - Mentoria pública em PRs com feedback rápido (<48h).
 
 ### 2) Desenvolvedores React
-- Migração simples de projetos Next.js.
-- Exemplos reais prontos para deploy.
-- Benchmark transparente (sem cherry-picking).
+- Migração simples de projetos Next.js com codemods e guias por cenário.
+- Exemplos reais prontos para deploy em diferentes nuvens.
+- Benchmark transparente (sem cherry-picking), com metodologia reproduzível.
 
 ### 3) Empresas interessadas
 - Política de compatibilidade e suporte LTS.
@@ -136,35 +156,33 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 
 ## Como começar
 
-Instale o framework publicado no npm:
+Atualmente, este repositório é um **monorepo privado** para desenvolvimento local (veja `"private": true` no `package.json`).
+
+Se você quer usar o boilerplate open-source da equipe Nextify, utilize:
 
 ```bash
-npm install nextify-monorepo
+bun create saasfly
+# ou
+npx create-saasfly@latest
 ```
 
-Crie um arquivo `index.js`:
-
-```js
-const nextify = require("nextify-monorepo");
-
-nextify.start({
-  port: 3000,
-});
-```
-
-Depois execute:
+Para contribuir com este repositório localmente:
 
 ```bash
-node index.js
+npm install
 ```
 
-ou:
+Para iniciar o ambiente de desenvolvimento do monorepo:
 
 ```bash
 npm run dev
 ```
 
-> Queremos evoluir para um fluxo com CLI (`create-nextify-app`) para onboarding em uma linha, no estilo `npx create-nextify-app minha-app`.
+Para testar o gerador de projeto local (`create-nextify`), execute:
+
+```bash
+npm exec create-nextify -- minha-app
+```
 
 ## Comunidade
 

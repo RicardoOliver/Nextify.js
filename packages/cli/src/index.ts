@@ -129,19 +129,20 @@ const portArg = Number(process.env.PORT ?? args[1] ?? 3000);
 const port = Number.isFinite(portArg) ? portArg : 3000;
 
 switch (command) {
-  case 'create':
+
+  case "create":
     createProject(args[1]);
     break;
 
-  case 'dev':
+  case "dev":
     runDevServer(port);
     break;
 
-  case 'build':
+  case "build":
     runBuild();
     break;
 
-  case 'start':
+  case "start":
     runProdServer(port);
     break;
 

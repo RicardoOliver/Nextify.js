@@ -3,7 +3,7 @@
 > O framework React para times que querem velocidade de desenvolvimento, performance de produção e arquitetura extensível por padrão.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
-[![npm version](https://img.shields.io/npm/v/nextify-monorepo)](#)
+[![npm package](https://img.shields.io/npm/v/create-nextify)](https://www.npmjs.com/package/create-nextify)
 [![license](https://img.shields.io/github/license/nextifyjs/nextify)](#)
 [![Discord](https://img.shields.io/discord/000000000000000000?label=discord)](#)
 
@@ -17,6 +17,46 @@ Nextify.js é um framework open source inspirado no melhor ecossistema React mod
 - 🌍 **Pronto para Node + Edge**: output separado por target e adaptadores.
 - 🤝 **OSS-friendly desde o dia 1**: roadmap público, governança, good first issues e templates.
 
+## Resumo comparativo para 2026 (e como o Nextify vai superar)
+
+| Framework | Foco Principal | Força atual | Estratégia do Nextify para superar |
+|---|---|---|---|
+| Astro | Conteúdo/Landing pages | Zero JS por padrão e ilhas | `Static-first + Islands + Streaming SSR` no mesmo runtime, sem trocar de framework. |
+| Remix | Dashboards/Apps dinâmicos | Modelo de dados no servidor | Camada de dados unificada (`loaders/actions/cache tags`) com invalidação inteligente e observabilidade nativa. |
+| SvelteKit | Alta performance | Bundle pequeno e simplicidade | Pipeline de build agressivo + splitting por rota + análise de custo de bundle em CI. |
+| Qwik | Interatividade instantânea | Resumibilidade | Hidratação seletiva e progressiva orientada por prioridade de interação. |
+
+### Diferencial do Nextify.js
+
+Em vez de otimizar apenas um caso de uso, o Nextify vai unir os melhores conceitos em uma arquitetura única:
+
+- **Content-first** para sites rápidos (como Astro).
+- **Data-first** para apps complexos (como Remix).
+- **Performance budget rígido** para frontend (como SvelteKit).
+- **Interatividade progressiva** sem custo alto de hidratação (inspirado em Qwik).
+
+> Meta: entregar um framework completo para conteúdo, SaaS e enterprise sem perder performance de classe mundial.
+
+## Meta global: superar o padrão atual de DX no ecossistema React
+
+Queremos que o Nextify.js seja escolhido por desenvolvedores do mundo todo não por marketing, mas por **resultado mensurável**.
+
+### Princípios de produto (não-negociáveis, estilo big tech)
+
+- **Mais rápido para construir**: setup inicial, hot reload e build incremental mais rápidos em projetos reais.
+- **Mais simples de operar**: observabilidade nativa, erros acionáveis e deploy previsível em múltiplos provedores.
+- **Mais aberto para evoluir**: APIs estáveis, RFC pública e arquitetura plugável para comunidade e empresas.
+- **Mais seguro por padrão**: security headers, hardening de runtime e políticas claras de disclosure.
+
+### Métricas públicas que vamos perseguir
+
+- Tempo de `create -> first commit` em menos de 10 minutos para novos usuários.
+- Cold build e rebuild incremental com benchmark público em apps SaaS, conteúdo e e-commerce.
+- Tempo médio de resposta em issues de comunidade abaixo de 48h.
+- Taxa de regressão de release monitorada com canary + changelog verificável.
+
+> Se uma funcionalidade não melhora DX, performance, confiabilidade ou adoção global, ela não entra na prioridade.
+
 ## TL;DR da estratégia para escalar no GitHub
 
 1. **Posicionamento claro**: “Next.js-like framework, com arquitetura plugável e foco em contribuição”.
@@ -25,7 +65,7 @@ Nextify.js é um framework open source inspirado no melhor ecossistema React mod
 4. **Distribuição contínua**: conteúdo técnico, benchmark transparente e comunidade ativa.
 5. **Release process confiável**: changelog rigoroso, semver e canary releases.
 
-> A estratégia completa está na pasta [`docs/`](./docs), no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md) e no blueprint Big Tech [`docs/NEXTIFY_BIGTECH_BLUEPRINT.md`](./docs/NEXTIFY_BIGTECH_BLUEPRINT.md).
+> A estratégia completa está na pasta [`docs/`](./docs), no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md), no blueprint Big Tech [`docs/NEXTIFY_BIGTECH_BLUEPRINT.md`](./docs/NEXTIFY_BIGTECH_BLUEPRINT.md) e na estratégia competitiva [`docs/COMPETITIVE_STRATEGY_2026.md`](./docs/COMPETITIVE_STRATEGY_2026.md).
 
 ---
 
@@ -96,7 +136,7 @@ Leia o arquivo [`CONTRIBUTING.md`](./CONTRIBUTING.md) para:
 
 ## Roadmap público
 
-Roadmap por fases com entregas trimestrais: [`docs/ROADMAP.md`](./docs/ROADMAP.md).
+Roadmap por fases com entregas trimestrais e metas mensuráveis: [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
 ## Estratégia de releases
 
@@ -112,9 +152,9 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 - Mentoria pública em PRs com feedback rápido (<48h).
 
 ### 2) Desenvolvedores React
-- Migração simples de projetos Next.js.
-- Exemplos reais prontos para deploy.
-- Benchmark transparente (sem cherry-picking).
+- Migração simples de projetos Next.js com codemods e guias por cenário.
+- Exemplos reais prontos para deploy em diferentes nuvens.
+- Benchmark transparente (sem cherry-picking), com metodologia reproduzível.
 
 ### 3) Empresas interessadas
 - Política de compatibilidade e suporte LTS.
@@ -136,35 +176,31 @@ SemVer + canary + changelog verificável em [`docs/RELEASE_STRATEGY.md`](./docs/
 
 ## Como começar
 
-Instale o framework publicado no npm:
+Este é um **monorepo público** do Nextify.js para desenvolvimento colaborativo global.
+
+Para criar um novo projeto Nextify (fluxo recomendado):
 
 ```bash
-npm install nextify-monorepo
+npx create-nextify@latest minha-app
 ```
 
-Crie um arquivo `index.js`:
-
-```js
-const nextify = require("nextify-monorepo");
-
-nextify.start({
-  port: 3000,
-});
-```
-
-Depois execute:
+Depois:
 
 ```bash
-node index.js
-```
-
-ou:
-
-```bash
+cd minha-app
+npm install
 npm run dev
 ```
 
-> Queremos evoluir para um fluxo com CLI (`create-nextify-app`) para onboarding em uma linha, no estilo `npx create-nextify-app minha-app`.
+Para contribuir no framework (este monorepo):
+
+```bash
+git clone https://github.com/nextifyjs/nextify.git
+cd nextify
+npm install
+npm run build
+npm run dev
+```
 
 ## Comunidade
 

@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import http from 'node:http';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-
 function createProject(target = 'nextify-app') {
     const root = join(process.cwd(), target);
+    if (existsSync(root)) {
+        console.error(`Erro: a pasta "${target}" já existe.`);
+        process.exit(1);
+    }
     mkdirSync(join(root, 'pages', 'api'), { recursive: true });
     writeFileSync(join(root, 'package.json'), JSON.stringify({
         name: target,
@@ -15,21 +18,33 @@ function createProject(target = 'nextify-app') {
             start: 'nextify start'
         },
         devDependencies: {
-            'create-nextify': '^0.1.0'
+            "create-nextify": "^0.1.0"
         }
     }, null, 2));
-    writeFileSync(join(root, 'pages', 'index.tsx'), `export default function Home() {\n  return <main>Bem-vindo ao Nextify.js</main>;\n}\n`);
-    writeFileSync(join(root, 'pages', 'api', 'health.ts'), `export default async function handler() {\n  return new Response(JSON.stringify({ ok: true }), { headers: { 'content-type': 'application/json' } });\n}\n`);
-    console.log(`Projeto criado em: ${root}`);
-    console.log('Próximos passos:');
+    writeFileSync(join(root, 'pages', 'index.tsx'), `export default function Home() {
+  return (
+    <main>
+      <h1>Bem-vindo ao Nextify.js 🚀</h1>
+    </main>
+  );
+}
+`);
+    writeFileSync(join(root, 'pages', 'api', 'health.ts'), `export default async function handler() {
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { 'content-type': 'application/json' }
+  });
+}
+`);
+    console.log(`\n✔ Projeto criado em: ${root}`);
+    console.log('\nPróximos passos:\n');
     console.log(`  cd ${target}`);
     console.log('  npm install');
-    console.log('  npm run dev');
+    console.log('  npm run dev\n');
 }
 function runDevServer(port) {
     const server = http.createServer((_req, res) => {
         res.setHeader('content-type', 'text/plain; charset=utf-8');
-        res.end('Nextify dev server ativo.');
+        res.end('Nextify dev server ativo 🚀');
     });
     server.listen(port, () => {
         console.log(`Nextify dev server em http://localhost:${port}`);
@@ -38,7 +53,7 @@ function runDevServer(port) {
 function runProdServer(port) {
     const server = http.createServer((_req, res) => {
         res.setHeader('content-type', 'text/plain; charset=utf-8');
-        res.end('Nextify production server ativo.');
+        res.end('Nextify production server ativo 🚀');
     });
     server.listen(port, () => {
         console.log(`Nextify start server em http://localhost:${port}`);
@@ -50,29 +65,44 @@ function runBuild() {
         generatedAt: new Date().toISOString(),
         note: 'Manifesto de rotas gerado pelo CLI do Nextify.'
     }, null, 2));
-    console.log('Build do Nextify concluído. Artefatos em dist/.');
+    console.log('✔ Build do Nextify concluído. Artefatos em dist/');
 }
-const [, , command, ...args] = process.argv;
-const portArg = Number(process.env.PORT ?? args[0] ?? 3000);
+function showHelp() {
+    console.log(`
+Uso:
+
+  create-nextify [nome-do-projeto]
+
+ou
+
+  nextify create [nome-do-projeto]
+  nextify dev [porta]
+  nextify build
+  nextify start [porta]
+`);
+}
+const args = process.argv.slice(2);
+if (args.length === 0) {
+    showHelp();
+    process.exit(0);
+}
+const command = args[0];
+const portArg = Number(process.env.PORT ?? args[1] ?? 3000);
 const port = Number.isFinite(portArg) ? portArg : 3000;
-if (!command || command === 'create') {
-    createProject(args[0]);
-}
-else if (command === 'dev') {
-    runDevServer(port);
-}
-else if (command === 'build') {
-    runBuild();
-}
-else if (command === 'start') {
-    runProdServer(port);
-}
-else {
-    console.log('Uso:');
-    console.log('  create-nextify [nome-do-projeto]');
-    console.log('  nextify create [nome-do-projeto]');
-    console.log('  nextify dev [porta]');
-    console.log('  nextify build');
-    console.log('  nextify start [porta]');
-    process.exit(1);
+switch (command) {
+    case "create":
+        createProject(args[1]);
+        break;
+    case "dev":
+        runDevServer(port);
+        break;
+    case "build":
+        runBuild();
+        break;
+    case "start":
+        runProdServer(port);
+        break;
+    default:
+        // suporta: npx create-nextify minha-app
+        createProject(command);
 }

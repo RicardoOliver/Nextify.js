@@ -189,4 +189,5 @@ createServer(async (req, res) => {
   return writeWebResponseToNode(res, response, requestId);
 }).listen(PORT, () => {
   logger.info('server.started', { port: PORT, baseUrl: `http://127.0.0.1:${PORT}` });
+  console.log(`reference-app running on http://127.0.0.1:${PORT}`);
 });

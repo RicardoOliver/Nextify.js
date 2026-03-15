@@ -1,11 +1,11 @@
 {
   "name": "create-nextify",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "CLI para criar aplicações Nextify.js",
   "type": "module",
   "bin": {
-  "nextify": "./packages/cli/dist/index.js",
-  "create-nextify": "./packages/cli/dist/index.js"
+    "nextify": "./packages/cli/dist/index.js",
+    "create-nextify": "./packages/cli/dist/index.js"
   },
   "files": [
     "dist"

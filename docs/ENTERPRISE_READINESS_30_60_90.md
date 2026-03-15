@@ -16,6 +16,7 @@
 - Pipeline de release com changelog, canary e checklist de promoção para `latest`.
 - Pacote inicial de documentação enterprise (compatibilidade, suporte, runbook de incidentes).
 
+
 ## FAQ rápido (sobre "Enterprise Readiness")
 
 ### "O desenvolvimento vai ser automático?"
@@ -34,7 +35,6 @@ Ou seja: há automação de partes do fluxo (testes, checks, release gates), mas
 
 Transformar a estratégia em **execução verificável** em 30/60/90 dias, para que empresas consigam adotar o framework com previsibilidade de qualidade, risco e suporte.
 
----
 
 ## 0–30 dias — Fundação de Confiabilidade (impacto mais alto)
 
@@ -245,3 +245,4 @@ Transformar a estratégia em **execução verificável** em 30/60/90 dias, para 
 - [ ] Política de compatibilidade + LTS publicada.
 - [ ] Runbook de incidentes e SLOs definidos.
 - [ ] Guia de adoção enterprise publicado.
+

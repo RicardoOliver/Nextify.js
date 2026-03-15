@@ -1,15 +1,13 @@
 {
   "name": "create-nextify",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "CLI para criar aplicações Nextify.js",
   "type": "module",
   "bin": {
-    "nextify": "./packages/cli/dist/index.js",
-    "create-nextify": "./packages/cli/dist/index.js"
-  },
-  "files": [
-  "packages/cli/dist"
-],
+  "nextify": "./dist/index.js",
+  "create-nextify": "./dist/index.js"
+},
+ "files": ["dist"],
   "scripts": {
     "build": "node -e \"console.log('build de demonstração concluído')\"",
     "typecheck": "node -e \"console.log('typecheck básico: sem validação TS estrita neste pacote')\"",

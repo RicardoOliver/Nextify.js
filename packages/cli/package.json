@@ -1,6 +1,6 @@
 {
   "name": "create-nextify",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "CLI para criar aplicações Nextify.js",
   "type": "module",
   "bin": {
@@ -11,17 +11,23 @@
     "dist"
   ],
   "scripts": {
-    "build": "node -e \"console.log('build de demonstração concluído')\"",
-    "typecheck": "node -e \"console.log('typecheck básico: sem validação TS estrita neste pacote')\"",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run --config ./vitest.config.ts",
-    "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
+    "lint": "echo 'sem lint configurado neste pacote'"
+  },
+  "dependencies": {
+    "vite": "^5.4.19",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "keywords": [
     "nextify",
     "framework",
     "cli"
   ],
-  "author": "Ricardo Oliveira",
+  "author": "",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.9.3"

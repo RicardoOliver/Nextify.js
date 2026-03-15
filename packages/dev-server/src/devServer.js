@@ -1,45 +1,52 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { createServer as createViteServer } from 'vite';
-import react from '@vitejs/plugin-react';
 import { createServer as createHttpServer } from 'node:http';
-import { buildRouteManifest } from '@nextify/core';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PROJECT_ROOT = process.env.NEXTIFY_ROOT ?? process.cwd();
 const PAGES_DIR = path.join(PROJECT_ROOT, 'pages');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+function toRoutePath(filePath) {
+  const clean = filePath
+    .replace(/\\/g, '/')
+    .replace(/^pages\//, '')
+    .replace(/\.(t|j)sx?$/, '')
+    .replace(/index$/, '');
+  if (!clean) return '/';
+  return '/' + clean.split('/').filter(Boolean)
+    .map((seg) => seg.replace(/^\[(.+)\]$/, ':$1')).join('/');
+}
 
-function nodeRequestToWebRequest(req, host) {
-  const url = `http://${host}${req.url}`;
-  return new globalThis.Request(url, { method: req.method ?? 'GET' });
+function buildRouteManifest(files) {
+  return files.map((file) => {
+    const normalized = file.replace(/\\/g, '/');
+    const routePath = toRoutePath(normalized);
+    const base = path.basename(normalized);
+    const kind = normalized.includes('/api/') ? 'api'
+      : base.startsWith('middleware') ? 'middleware' : 'page';
+    return { file: normalized, routePath, kind };
+  });
 }
 
 function getPageFiles() {
   if (!fs.existsSync(PAGES_DIR)) return [];
-
   const files = [];
   function walk(dir, base = '') {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const rel = base ? `${base}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        walk(path.join(dir, entry.name), rel);
-      } else if (/\.(tsx|ts|jsx|js)$/.test(entry.name)) {
-        files.push(`pages/${rel}`);
-      }
+      if (entry.isDirectory()) walk(path.join(dir, entry.name), rel);
+      else if (/\.(tsx|ts|jsx|js)$/.test(entry.name)) files.push(`pages/${rel}`);
     }
   }
   walk(PAGES_DIR);
   return files;
 }
 
-// ─── HTML shell ───────────────────────────────────────────────────────────────
-
-function buildHtmlShell(routePath, viteBase = '/') {
+function buildHtmlShell(routePath) {
+  const fileHint = routePath === '/' ? '/pages/index' : `/pages${routePath}`;
+  const candidates = JSON.stringify([
+    `${fileHint}.tsx`, `${fileHint}.jsx`, `${fileHint}.ts`, `${fileHint}.js`,
+  ]);
   return `<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -52,138 +59,96 @@ function buildHtmlShell(routePath, viteBase = '/') {
     <script type="module">
       import { createElement } from 'react';
       import { createRoot } from 'react-dom/client';
-
-      // Descobre qual página carregar pela rota atual
-      const route = ${JSON.stringify(routePath)};
-      
+      const candidates = ${candidates};
       async function loadPage() {
-        try {
-          // Tenta importar o módulo da página via Vite HMR
-          const mod = await import(${JSON.stringify(`/pages${routePath === '/' ? '/index' : routePath}.tsx`)});
-          const Page = mod.default;
-          if (!Page) throw new Error('Página sem default export');
-          
-          const root = document.getElementById('root');
-          createRoot(root).render(createElement(Page));
-        } catch (err) {
-          document.getElementById('root').innerHTML = \`
-            <div style="font-family:monospace;padding:2rem;color:#e53e3e">
-              <h2>Erro ao carregar a página</h2>
-              <pre>\${err.message}</pre>
-            </div>
-          \`;
+        let mod;
+        for (const c of candidates) { try { mod = await import(c); break; } catch {} }
+        const root = document.getElementById('root');
+        if (!mod?.default) {
+          root.innerHTML = '<div style="font-family:monospace;padding:2rem;color:#e53e3e"><h2>404 — Página não encontrada</h2></div>';
+          return;
         }
+        createRoot(root).render(createElement(mod.default));
       }
-
-      loadPage();
+      loadPage().catch((err) => {
+        document.getElementById('root').innerHTML = '<pre style="color:red;padding:2rem">' + err.stack + '</pre>';
+      });
     </script>
   </body>
 </html>`;
 }
 
-// ─── Dev server principal ─────────────────────────────────────────────────────
-
 export async function startDevServer(options = {}) {
   const root = options.root ?? PROJECT_ROOT;
   const port = options.port ?? PORT;
 
-  // 1. Sobe o Vite em modo middleware (sem porta própria)
+  // Resolve vite e plugin-react a partir do projeto do usuário (node_modules local)
+  const vitePath = path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js');
+  const reactPluginPath = path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs');
+
+  let createViteServer, react;
+  try {
+    ({ createServer: createViteServer } = await import(vitePath));
+    ({ default: react } = await import(reactPluginPath));
+  } catch (err) {
+    console.error('[nextify] Vite não encontrado. Rode: npm install vite @vitejs/plugin-react');
+    console.error(err.message);
+    process.exit(1);
+  }
+
   const vite = await createViteServer({
     root,
     server: { middlewareMode: true },
     appType: 'custom',
     plugins: [react()],
-    resolve: {
-      alias: {
-        '@': path.join(root, 'src'),
-      },
-    },
+    resolve: { alias: { '@': path.join(root, 'src') } },
   });
 
-  // 2. Gera o manifesto de rotas a partir dos arquivos em pages/
-  const pageFiles = getPageFiles();
-  const manifest = buildRouteManifest(pageFiles);
-
+  const manifest = buildRouteManifest(getPageFiles());
   console.log('\n  nextify dev\n');
-  for (const route of manifest) {
-    const icon = route.kind === 'api' ? '⚡' : '○';
-    console.log(`  ${icon}  ${route.routePath}`);
-  }
+  for (const r of manifest) console.log(`  ${r.kind === 'api' ? '⚡' : '○'}  ${r.routePath}`);
   console.log('');
 
-  // 3. Cria o servidor HTTP que orquestra Vite + rotas
   const server = createHttpServer(async (req, res) => {
     const host = req.headers.host ?? `localhost:${port}`;
-    const url = new URL(`http://${host}${req.url}`);
-    const pathname = url.pathname;
+    const pathname = new URL(`http://${host}${req.url}`).pathname;
 
-    // ── Arquivos estáticos e HMR do Vite (js, css, @vite, node_modules) ──
-    const isViteInternal =
-      pathname.startsWith('/@') ||
-      pathname.startsWith('/node_modules') ||
-      pathname.match(/\.(js|ts|tsx|jsx|css|svg|png|ico|woff2?)$/);
-
-    if (isViteInternal) {
-      vite.middlewares(req, res, () => {
-        res.statusCode = 404;
-        res.end('Not found');
-      });
+    if (pathname.startsWith('/@') || pathname.startsWith('/node_modules') ||
+        /\.(js|ts|tsx|jsx|css|svg|png|ico|woff2?|map)$/.test(pathname)) {
+      vite.middlewares(req, res, () => { res.statusCode = 404; res.end(); });
       return;
     }
 
-    // ── API Routes ──
-    const apiRoute = manifest.find(
-      (r) => r.kind === 'api' && r.routePath === pathname
-    );
-
+    const apiRoute = manifest.find((r) => r.kind === 'api' && r.routePath === pathname);
     if (apiRoute) {
       try {
         const mod = await vite.ssrLoadModule(path.join(root, apiRoute.file));
-        const handler = mod.default;
-        if (typeof handler !== 'function') {
-          res.statusCode = 500;
-          res.end('API route sem default export');
-          return;
-        }
-
-        const webReq = nodeRequestToWebRequest(req, host);
-        const webRes = await handler(webReq);
-
+        if (typeof mod.default !== 'function') throw new Error('API route sem default export');
+        const webReq = new globalThis.Request(`http://${host}${req.url}`, { method: req.method ?? 'GET' });
+        const webRes = await mod.default(webReq);
         res.statusCode = webRes.status;
-        for (const [key, value] of webRes.headers.entries()) {
-          res.setHeader(key, value);
-        }
-        const body = await webRes.arrayBuffer();
-        res.end(Buffer.from(body));
+        for (const [k, v] of webRes.headers.entries()) res.setHeader(k, v);
+        res.end(Buffer.from(await webRes.arrayBuffer()));
       } catch (err) {
         vite.ssrFixStacktrace(err);
-        console.error('[nextify] API route error:', err);
         res.statusCode = 500;
-        res.end(JSON.stringify({ error: String(err.message) }));
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({ error: err.message }));
       }
       return;
     }
 
-    // ── Páginas React — entrega o HTML shell para o Vite hidratar ──
-    const pageRoute = manifest.find(
-      (r) => r.kind === 'page' && r.routePath === pathname
-    );
-
-    const routePath = pageRoute ? pageRoute.routePath : pathname;
-
     try {
-      let html = buildHtmlShell(routePath);
-      // Deixa o Vite injetar o client HMR e transformar o HTML
-      html = await vite.transformIndexHtml(req.url ?? '/', html);
-      res.statusCode = pageRoute ? 200 : 404;
+      const html = await vite.transformIndexHtml(req.url ?? '/', buildHtmlShell(pathname));
+      const found = manifest.some((r) => r.kind === 'page' && r.routePath === pathname);
+      res.statusCode = found ? 200 : 404;
       res.setHeader('content-type', 'text/html; charset=utf-8');
       res.end(html);
     } catch (err) {
       vite.ssrFixStacktrace(err);
-      console.error('[nextify] render error:', err);
       res.statusCode = 500;
       res.setHeader('content-type', 'text/html; charset=utf-8');
-      res.end(`<pre style="color:red">${err.stack}</pre>`);
+      res.end(`<pre style="color:red;padding:2rem">${err.stack}</pre>`);
     }
   });
 
@@ -195,5 +160,4 @@ export async function startDevServer(options = {}) {
   return { server, vite };
 }
 
-// Entrada direta: node devServer.js
 startDevServer();

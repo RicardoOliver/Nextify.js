@@ -7,7 +7,10 @@
   ],
   "scripts": {
     "build": "npm run --workspaces build",
-    "dev": "npm --workspace @nextify/dev-server run dev"
+    "dev": "npm --workspace @nextify/dev-server run dev",
+    "typecheck": "npm run --workspaces --if-present typecheck",
+    "test": "npm run --workspaces --if-present test",
+    "lint": "npm run --workspaces --if-present lint"
   },
   "description": "Nextify.js monorepo (public)"
 }

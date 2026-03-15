@@ -5,7 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "node -e \"console.log('build de demonstra\u00e7\u00e3o conclu\u00eddo')\""
+    "build": "node -e \"console.log('build de demonstração concluído')\"",
+    "typecheck": "node -e \"console.log('typecheck básico: sem validação TS estrita neste pacote')\"",
+    "test": "node -e \"console.log('sem testes neste pacote')\"",
+    "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -46,3 +46,9 @@ Critical and release-blocking findings must be remediated or explicitly risk-acc
 - Average **PR lead time (open → merge)**: **< 48h**
 - **CI success rate**: **> 85%**
 - **0 merges without tests** (test workflow is mandatory)
+
+## Runtime Hardening and Release Controls
+
+- CSP now supports profile-based rollout (`development` report-only; `balanced`/`strict` enforce by default).
+- OWASP runtime checklist for API routes/middleware/plugins lives at `docs/SECURITY_RUNTIME_CHECKLIST.md`.
+- Every **minor** release must include the completed checklist and migration notes when applicable.

@@ -4,6 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "node src/devServer.js",
-    "build": "echo 'dev-server não requer build nesta PoC'"
+    "build": "echo 'dev-server não requer build nesta PoC'",
+    "typecheck": "node -e \"console.log('sem typecheck neste pacote')\"",
+    "test": "node -e \"console.log('sem testes neste pacote')\"",
+    "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   }
 }

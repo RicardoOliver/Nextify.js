@@ -1,0 +1,20 @@
+# Configuração para o app GitHub Settings (probot/settings)
+# Garante que PRs para `main` só façam merge com aprovação e checks obrigatórios verdes.
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+      required_status_checks:
+        strict: true
+        contexts:
+          - install
+          - typecheck
+          - test
+          - lint
+          - build (@nextify/core)
+          - build (create-nextify)
+          - build (@nextify/dev-server)
+          - build (@nextify/build)
+      enforce_admins: false
+      restrictions: null

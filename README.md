@@ -2,7 +2,7 @@
 
 > O framework React para times que querem velocidade de desenvolvimento, performance de produção e arquitetura extensível por padrão.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
+[![CI](https://github.com/nextifyjs/nextify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nextifyjs/nextify/actions/workflows/ci.yml)
 
 
 [![npm package](https://img.shields.io/npm/v/create-nextify)](https://www.npmjs.com/package/create-nextify)

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "node src/build.js"
+    "build": "node src/build.js",
+    "typecheck": "node -e \"console.log('sem typecheck neste pacote')\"",
+    "test": "node -e \"console.log('sem testes neste pacote')\"",
+    "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   }
 }

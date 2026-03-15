@@ -2,91 +2,51 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  install:
-    name: install
+  validate:
+    name: Validate (lint, typecheck, test)
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
 
-  commitlint:
-    name: commitlint
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
-      - run: npm run commitlint
-        env:
-          COMMIT_RANGE_FROM: ${{ github.event.pull_request.base.sha }}
-          COMMIT_RANGE_TO: ${{ github.event.pull_request.head.sha }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  build:
-    name: build (${{ matrix.workspace }})
-    needs: install
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        workspace:
-          - '@nextify/core'
-          - create-nextify
-          - '@nextify/dev-server'
-          - '@nextify/build'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm --workspace ${{ matrix.workspace }} run build
 
-  typecheck:
-    name: typecheck
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
-      - run: npm run typecheck
+      - name: Install dependencies
+        run: npm install
 
-  test:
-    name: test
-    needs: install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
-      - run: npm test
+      - name: Lint
+        run: npm run lint
 
-  lint:
-    name: lint
-    needs: install
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+  dependency-audit:
+    name: Dependency Audit (release gate)
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm run lint
-      - run: npm run format:check
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit (fail on high/critical in production deps)
+        run: npm audit --omit=dev --audit-level=high

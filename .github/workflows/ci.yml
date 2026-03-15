@@ -18,6 +18,24 @@ jobs:
           cache: npm
       - run: npm install
 
+  commitlint:
+    name: commitlint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm install
+      - run: npm run commitlint
+        env:
+          COMMIT_RANGE_FROM: ${{ github.event.pull_request.base.sha }}
+          COMMIT_RANGE_TO: ${{ github.event.pull_request.head.sha }}
+
   build:
     name: build (${{ matrix.workspace }})
     needs: install
@@ -26,10 +44,10 @@ jobs:
       fail-fast: false
       matrix:
         workspace:
-          - @nextify/core
+          - '@nextify/core'
           - create-nextify
-          - @nextify/dev-server
-          - @nextify/build
+          - '@nextify/dev-server'
+          - '@nextify/build'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -77,3 +95,4 @@ jobs:
           cache: npm
       - run: npm install
       - run: npm run lint
+      - run: npm run format:check

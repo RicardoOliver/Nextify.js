@@ -1,0 +1,122 @@
+name: Release Canary
+
+on:
+  push:
+    branches:
+      - release/canary
+    tags:
+      - canary-v*
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  canary:
+    name: Build changelog + publish canary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate traceable changelog entry
+        id: changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          PREVIOUS_TAG="$(git tag --list --sort=-creatordate 'v*' | head -n 1)"
+          if [ -n "$PREVIOUS_TAG" ]; then
+            RANGE="$PREVIOUS_TAG..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+
+          NOTES="$(git log $RANGE --pretty=format:'- %s (%h) — %an' --no-merges)"
+          if [ -z "$NOTES" ]; then
+            NOTES='- Sem mudanças detectadas no intervalo selecionado.'
+          fi
+
+          DATE="$(date -u +'%Y-%m-%d')"
+          HEADER="## Canary ${DATE} (${GITHUB_SHA::7})"
+
+          {
+            printf '%s\n\n' "$HEADER"
+            printf 'Origem: `%s` em `%s`.\n\n' "$GITHUB_SHA" "$GITHUB_REF_NAME"
+            printf 'Responsável pelo publish: @%s.\n\n' "$GITHUB_ACTOR"
+            printf '### Mudanças\n%s\n\n' "$NOTES"
+          } > .changelog_entry.md
+
+          if [ -f CHANGELOG.md ]; then
+            cat CHANGELOG.md >> .changelog_previous.md
+          else
+            printf '# Changelog\n\n' > .changelog_previous.md
+          fi
+
+          {
+            printf '# Changelog\n\n'
+            cat .changelog_entry.md
+            if [ -f CHANGELOG.md ]; then
+              sed '1,2d' .changelog_previous.md
+            fi
+          } > CHANGELOG.md
+
+      - name: Commit changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- CHANGELOG.md; then
+            echo "Sem alteração em CHANGELOG.md"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "docs(changelog): update canary changelog"
+          git push
+
+      - name: Publish canary packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const { execSync } = require('node:child_process');
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const root = process.cwd();
+          const packagePaths = fs
+            .readdirSync(path.join(root, 'packages'), { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .map((entry) => path.join(root, 'packages', entry.name, 'package.json'))
+            .filter((file) => fs.existsSync(file));
+
+          for (const packageJsonPath of packagePaths) {
+            const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+            const packageDir = path.dirname(packageJsonPath);
+            const cmd = `npm publish --tag canary --access public --provenance`;
+            console.log(`Publishing ${pkg.name} from ${packageDir}`);
+            execSync(cmd, { cwd: packageDir, stdio: 'inherit' });
+          }
+          NODE
+
+      - name: Publish prerelease notes
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: canary-${{ github.run_number }}
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          name: Canary ${{ github.run_number }}
+          body_path: .changelog_entry.md

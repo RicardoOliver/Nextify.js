@@ -1,0 +1,116 @@
+name: Promote Canary to Latest
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão estável que será promovida (ex: 1.4.0)'
+        required: true
+        type: string
+      source_tag:
+        description: 'Tag canary de origem (ex: canary-42)'
+        required: true
+        type: string
+      owners_signoff:
+        description: Responsáveis (usernames separados por vírgula)
+        required: true
+        type: string
+      checklist_tests:
+        description: Checklist - testes e benchmarks aprovados
+        required: true
+        type: boolean
+      checklist_changelog:
+        description: Checklist - changelog revisado
+        required: true
+        type: boolean
+      checklist_migration:
+        description: Checklist - notas de migração validadas
+        required: true
+        type: boolean
+      checklist_risks:
+        description: Checklist - riscos documentados e comunicados
+        required: true
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate release checklist
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "${{ inputs.checklist_tests }}" = "true" ] || (echo "Checklist de testes não aprovado" && exit 1)
+          [ "${{ inputs.checklist_changelog }}" = "true" ] || (echo "Checklist de changelog não aprovado" && exit 1)
+          [ "${{ inputs.checklist_migration }}" = "true" ] || (echo "Checklist de migração não aprovado" && exit 1)
+          [ "${{ inputs.checklist_risks }}" = "true" ] || (echo "Checklist de riscos não aprovado" && exit 1)
+          [ -n "${{ inputs.owners_signoff }}" ] || (echo "Assinatura dos responsáveis é obrigatória" && exit 1)
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Promote npm dist-tag from canary to latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_VERSION="${{ inputs.version }}"
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const { execSync } = require('node:child_process');
+
+          const version = process.env.TARGET_VERSION;
+          const packageDirs = fs
+            .readdirSync(path.join(process.cwd(), 'packages'), { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .map((entry) => path.join('packages', entry.name, 'package.json'))
+            .filter((file) => fs.existsSync(file));
+
+          for (const pkgPath of packageDirs) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            const spec = `${pkg.name}@${version}`;
+            console.log(`Promoting ${spec} to latest`);
+            execSync(`npm dist-tag add ${spec} latest`, { stdio: 'inherit' });
+          }
+          NODE
+
+      - name: Create stable release notes
+        shell: bash
+        run: |
+          cat > release_notes.md <<'EOF'
+          ## Release v${{ inputs.version }}
+
+          **Canary de origem:** `${{ inputs.source_tag }}`
+          **Data de promoção (UTC):** `$(date -u +'%Y-%m-%d %H:%M:%S')`
+          **Responsáveis:** ${{ inputs.owners_signoff }}
+
+          ### Checklist de promoção
+          - [x] Testes e benchmarks aprovados
+          - [x] Changelog revisado
+          - [x] Notas de migração validadas
+          - [x] Riscos documentados/comunicados
+
+          Consulte o template padrão em `.github/release-notes-template.md` para o conteúdo detalhado de breaking changes, migração e riscos.
+          EOF
+
+      - name: Promote GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: v${{ inputs.version }}
+          body_path: release_notes.md

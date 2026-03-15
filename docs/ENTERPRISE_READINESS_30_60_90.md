@@ -187,12 +187,12 @@ Transformar a estratégia em **execução verificável** em 30/60/90 dias, para 
 ### 4) Go-to-market técnico para empresas
 
 **Entregáveis**
-- “Enterprise Adoption Guide” com:
+- “Enterprise Adoption Guide” em `docs/ENTERPRISE_ADOPTION_GUIDE.md` com:
   - arquitetura recomendada
   - segurança
   - rollout progressivo
   - rollback
-- 1 estudo de caso interno (PoC real com métricas antes/depois).
+- 1 estudo de caso interno em `docs/case-studies/POC_INTERNA_PILOTO_ENTERPRISE.md` (PoC real com métricas antes/depois).
 
 **Critério de aceite**
 - Time de engenharia consegue aprovar piloto com evidência técnica.

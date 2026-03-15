@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node -e \"console.log('build de demonstração concluído')\"",
     "typecheck": "node -e \"console.log('typecheck básico: sem validação TS estrita neste pacote')\"",
-    "test": "node -e \"console.log('sem testes neste pacote')\"",
+    "test": "vitest run --config ./vitest.config.ts",
     "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   },
   "dependencies": {

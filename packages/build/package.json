@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node src/build.js",
     "typecheck": "node -e \"console.log('sem typecheck neste pacote')\"",
-    "test": "node -e \"console.log('sem testes neste pacote')\"",
+    "test": "vitest run --config ./vitest.config.ts",
     "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   }
 }

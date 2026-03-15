@@ -1,7 +1,8 @@
 import { readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-function collectJsAssets(dir) {
+export function collectJsAssets(dir) {
   try {
     return readdirSync(dir)
       .map((file) => join(dir, file))
@@ -12,7 +13,7 @@ function collectJsAssets(dir) {
   }
 }
 
-function evaluatePerformanceBudget(assets) {
+export function evaluatePerformanceBudget(assets) {
   const budget = {
     maxSingleAssetKb: 170,
     maxTotalJsKb: 350
@@ -39,17 +40,26 @@ function evaluatePerformanceBudget(assets) {
   };
 }
 
-mkdirSync('dist', { recursive: true });
+export function runBuild(cwd = process.cwd()) {
+  mkdirSync(join(cwd, 'dist'), { recursive: true });
 
-const routeManifest = {
-  generatedAt: new Date().toISOString(),
-  note: 'Manifesto de rotas gerado pelo build system do Nextify.'
-};
-writeFileSync('dist/route-manifest.json', JSON.stringify(routeManifest, null, 2));
+  const routeManifest = {
+    generatedAt: new Date().toISOString(),
+    note: 'Manifesto de rotas gerado pelo build system do Nextify.'
+  };
+  writeFileSync(join(cwd, 'dist/route-manifest.json'), JSON.stringify(routeManifest, null, 2));
 
-const assets = collectJsAssets(join(process.cwd(), 'dist'));
-const performanceBudget = evaluatePerformanceBudget(assets);
-writeFileSync('dist/performance-budget.json', JSON.stringify(performanceBudget, null, 2));
+  const assets = collectJsAssets(join(cwd, 'dist'));
+  const performanceBudget = evaluatePerformanceBudget(assets);
+  writeFileSync(join(cwd, 'dist/performance-budget.json'), JSON.stringify(performanceBudget, null, 2));
 
-console.log('Build concluído. Artefatos em dist/.');
-console.log(`Performance budget: ${performanceBudget.status.toUpperCase()}.`);
+  console.log('Build concluído. Artefatos em dist/.');
+  console.log(`Performance budget: ${performanceBudget.status.toUpperCase()}.`);
+
+  return performanceBudget;
+}
+
+const isDirectExecution = process.argv[1] === fileURLToPath(import.meta.url);
+if (isDirectExecution) {
+  runBuild();
+}

@@ -23,7 +23,7 @@ const catalogLoader = async (ctx) => {
 };
 
 registerApiRoute('/api/health', () => {
-  return Response.json({ ok: true, service: 'reference-app' });
+  return globalThis.Response.json({ ok: true, service: 'reference-app' });
 });
 
 registerApiRoute('/api/catalog', async (request) => {
@@ -32,21 +32,21 @@ registerApiRoute('/api/catalog', async (request) => {
     defaultRevalidateSeconds: 120
   });
 
-  return Response.json(result);
+  return globalThis.Response.json(result);
 });
 
 registerApiRoute('/api/revalidate', async (request) => {
   const url = new URL(request.url);
   const tag = url.searchParams.get('tag') || 'catalog';
   const removed = invalidateDataTags([tag]);
-  return Response.json({ tag, removed });
+  return globalThis.Response.json({ tag, removed });
 });
 
 function nodeRequestToWebRequest(req) {
   const protocol = req.headers['x-forwarded-proto'] || 'http';
   const host = req.headers.host || `localhost:${PORT}`;
   const url = `${protocol}://${host}${req.url}`;
-  return new Request(url, { method: req.method || 'GET' });
+  return new globalThis.Request(url, { method: req.method || 'GET' });
 }
 
 async function writeWebResponseToNode(res, response) {
@@ -63,7 +63,7 @@ createServer(async (req, res) => {
   const webRequest = nodeRequestToWebRequest(req);
 
   if (req.url === '/') {
-    const baseResponse = await middlewareRunner(webRequest, async () => new Response(null));
+    const baseResponse = await middlewareRunner(webRequest, async () => new globalThis.Response(null));
     for (const [name, value] of baseResponse.headers.entries()) {
       res.setHeader(name, value);
     }
@@ -87,7 +87,7 @@ createServer(async (req, res) => {
 
   const notFound = await middlewareRunner(
     webRequest,
-    async () => new Response('Not Found', { status: 404 })
+    async () => new globalThis.Response('Not Found', { status: 404 })
   );
 
   return writeWebResponseToNode(res, notFound);

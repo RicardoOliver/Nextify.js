@@ -1,12 +1,23 @@
 {
   "name": "@nextify/dev-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
+  "main": "./src/devServer.js",
+  "exports": {
+    ".": "./src/devServer.js"
+  },
   "scripts": {
     "dev": "node src/devServer.js",
-    "build": "echo 'dev-server não requer build nesta PoC'",
-    "typecheck": "node -e \"console.log('sem typecheck neste pacote')\"",
-    "test": "node -e \"console.log('sem testes neste pacote')\"",
-    "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
+    "build": "echo '@nextify/dev-server não requer build — é executado direto pelo Node'",
+    "typecheck": "echo 'sem typecheck neste pacote'",
+    "test": "echo 'sem testes neste pacote'",
+    "lint": "echo 'sem lint configurado neste pacote'"
+  },
+  "dependencies": {
+    "@nextify/core": "*",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.19"
   }
 }

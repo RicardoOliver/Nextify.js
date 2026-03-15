@@ -1,6 +1,6 @@
 {
   "name": "nextify-monorepo",
-  "private": true,
+  "private": false,
   "version": "0.1.0",
   "workspaces": [
     "packages/*"
@@ -8,5 +8,6 @@
   "scripts": {
     "build": "npm run --workspaces build",
     "dev": "npm --workspace @nextify/dev-server run dev"
-  }
+  },
+  "description": "Nextify.js monorepo (public)"
 }

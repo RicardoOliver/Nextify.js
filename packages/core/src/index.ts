@@ -6,3 +6,6 @@ export * from './cache/smartCache.js';
 export * from './middleware/compose.js';
 export * from './middleware/securityHeaders.js';
 export * from './plugins/pluginSystem.js';
+export * from './cache/taggedCache.js';
+export * from './data/runtime.js';
+export * from './rendering/islands.js';

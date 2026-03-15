@@ -1,0 +1,10 @@
+{
+  "budget": {
+    "maxSingleAssetKb": 170,
+    "maxTotalJsKb": 350
+  },
+  "totalKb": 0,
+  "largestAssetKb": 0,
+  "status": "pass",
+  "violations": []
+}

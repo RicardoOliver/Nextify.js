@@ -4,9 +4,11 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/nextifyjs/nextify/ci.yml?branch=main)](#)
 
+
 [![npm package](https://img.shields.io/npm/v/create-nextify)](https://www.npmjs.com/package/create-nextify)
 
 [![npm status](https://img.shields.io/badge/npm-private-orange)](#)
+
 
 [![license](https://img.shields.io/github/license/nextifyjs/nextify)](#)
 [![Discord](https://img.shields.io/discord/000000000000000000?label=discord)](#)
@@ -21,11 +23,38 @@ Nextify.js é um framework open source inspirado no melhor ecossistema React mod
 - 🌍 **Pronto para Node + Edge**: output separado por target e adaptadores.
 - 🤝 **OSS-friendly desde o dia 1**: roadmap público, governança, good first issues e templates.
 
+
+## Resumo comparativo para 2026 (e como o Nextify vai superar)
+
+| Framework | Foco Principal | Força atual | Estratégia do Nextify para superar |
+|---|---|---|---|
+| Astro | Conteúdo/Landing pages | Zero JS por padrão e ilhas | `Static-first + Islands + Streaming SSR` no mesmo runtime, sem trocar de framework. |
+| Remix | Dashboards/Apps dinâmicos | Modelo de dados no servidor | Camada de dados unificada (`loaders/actions/cache tags`) com invalidação inteligente e observabilidade nativa. |
+| SvelteKit | Alta performance | Bundle pequeno e simplicidade | Pipeline de build agressivo + splitting por rota + análise de custo de bundle em CI. |
+| Qwik | Interatividade instantânea | Resumibilidade | Hidratação seletiva e progressiva orientada por prioridade de interação. |
+
+### Diferencial do Nextify.js
+
+Em vez de otimizar apenas um caso de uso, o Nextify vai unir os melhores conceitos em uma arquitetura única:
+
+- **Content-first** para sites rápidos (como Astro).
+- **Data-first** para apps complexos (como Remix).
+- **Performance budget rígido** para frontend (como SvelteKit).
+- **Interatividade progressiva** sem custo alto de hidratação (inspirado em Qwik).
+
+> Meta: entregar um framework completo para conteúdo, SaaS e enterprise sem perder performance de classe mundial.
+
+
+
 ## Meta global: superar o padrão atual de DX no ecossistema React
 
 Queremos que o Nextify.js seja escolhido por desenvolvedores do mundo todo não por marketing, mas por **resultado mensurável**.
 
+
+### Princípios de produto (não-negociáveis, estilo big tech)
+
 ### Princípios de produto (não-negociáveis)
+
 
 - **Mais rápido para construir**: setup inicial, hot reload e build incremental mais rápidos em projetos reais.
 - **Mais simples de operar**: observabilidade nativa, erros acionáveis e deploy previsível em múltiplos provedores.
@@ -49,7 +78,7 @@ Queremos que o Nextify.js seja escolhido por desenvolvedores do mundo todo não 
 4. **Distribuição contínua**: conteúdo técnico, benchmark transparente e comunidade ativa.
 5. **Release process confiável**: changelog rigoroso, semver e canary releases.
 
-> A estratégia completa está na pasta [`docs/`](./docs), no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md) e no blueprint Big Tech [`docs/NEXTIFY_BIGTECH_BLUEPRINT.md`](./docs/NEXTIFY_BIGTECH_BLUEPRINT.md).
+> A estratégia completa está na pasta [`docs/`](./docs), no guia de arquitetura [`ARCHITECTURE.md`](./ARCHITECTURE.md), no blueprint Big Tech [`docs/NEXTIFY_BIGTECH_BLUEPRINT.md`](./docs/NEXTIFY_BIGTECH_BLUEPRINT.md) e na estratégia competitiva [`docs/COMPETITIVE_STRATEGY_2026.md`](./docs/COMPETITIVE_STRATEGY_2026.md).
 
 ---
 
@@ -179,13 +208,32 @@ npm run dev
 
 Para contribuir no framework (este monorepo):
 
+
+Este é um **monorepo público** do Nextify.js para desenvolvimento colaborativo global.
+
+Para criar um novo projeto Nextify (fluxo recomendado):
+
+```bash
+npx create-nextify@latest minha-app
+```
+
+Depois:
+
+```bash
+cd minha-app
+npm install
+npm run dev
+```
+
+Para contribuir no framework (este monorepo):
+
 ```bash
 git clone https://github.com/nextifyjs/nextify.git
 cd nextify
 npm install
 npm run build
 npm run dev
-=======
+
 Atualmente, este repositório é um **monorepo privado** para desenvolvimento local (veja `"private": true` no `package.json`).
 
 Se você quer usar o boilerplate open-source da equipe Nextify, utilize:
@@ -204,7 +252,12 @@ npm install
 
 Para iniciar o ambiente de desenvolvimento do monorepo:
 
+
 ```bash
+git clone https://github.com/nextifyjs/nextify.git
+cd nextify
+npm install
+npm run build
 npm run dev
 ```
 

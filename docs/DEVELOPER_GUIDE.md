@@ -14,8 +14,10 @@ packages/core/src/
   routing/
   rendering/
   cache/
+  data/
   middleware/
   plugins/
+  rendering/islands.ts
 ```
 
 ## 3. Princípios de design
@@ -42,3 +44,12 @@ packages/core/src/
 - Scripts previsíveis de lint/test/build.
 - Erros com mensagens acionáveis.
 - Issues com passos de reprodução obrigatórios.
+
+
+## 7. Capacidades já implementadas (baseline técnico)
+
+- **Data runtime com cache por tags** (`defineLoader`, `defineAction`, `executeLoader`, `invalidateDataTags`).
+- **Rendering com islands** (`defineIsland`, `renderIslandShell`, `getIslandHydrationScript`).
+- **Performance budget no build** com relatório em `dist/performance-budget.json`.
+
+Esses blocos formam a base para evoluir o Nextify para um framework de nível enterprise com DX e performance mensuráveis.

@@ -63,7 +63,7 @@ function buildHtmlShell(routePath) {
       const candidates = ${candidates};
       async function loadPage() {
         let mod;
-        for (const c of candidates) { try { mod = await import(c); break; } catch {} }
+        for (const c of candidates) { try { mod = await import(/* @vite-ignore */c); break; } catch {} }
         const root = document.getElementById('root');
         if (!mod?.default) {
           root.innerHTML = '<div style="font-family:monospace;padding:2rem;color:#e53e3e"><h2>404 — Página não encontrada</h2></div>';

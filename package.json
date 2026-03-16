@@ -1,7 +1,7 @@
 {
   "name": "nextify-monorepo",
   "private": false,
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Nextify.js monorepo (public)",
   "author": "Ricardo Oliveira",
   "license": "MIT",

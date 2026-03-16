@@ -42,12 +42,125 @@ function createProject(target = 'nextify-app') {
   writeFileSync(
     join(root, 'pages', 'index.tsx'),
 `export default function Home() {
+
   return (
-    <main style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
-      <h1>Bem-vindo ao Nextify.js 🚀</h1>
-      <p>Edite <code>pages/index.tsx</code> para começar.</p>
+
+    <main style={{
+      minHeight:"100vh",
+      background:"#020617",
+      color:"white",
+      fontFamily:"Inter, sans-serif",
+      padding:"80px"
+    }}>
+
+      <section style={{ textAlign:"center", marginBottom:"100px" }}>
+
+        <h1 style={{
+          fontSize:"72px",
+          fontWeight:"bold",
+          background:"linear-gradient(90deg,#6366f1,#7c3aed)",
+          WebkitBackgroundClip:"text",
+          color:"transparent"
+        }}>
+          Nextify ⚡
+        </h1>
+
+        <p style={{ fontSize:"22px", opacity:0.8 }}>
+          The modern React framework powered by Vite
+        </p>
+
+        <div style={{ marginTop:"40px" }}>
+
+          <button style={{
+            padding:"16px 32px",
+            borderRadius:"12px",
+            border:"none",
+            background:"linear-gradient(90deg,#6366f1,#7c3aed)",
+            color:"white",
+            fontWeight:"bold",
+            cursor:"pointer"
+          }}>
+            Get Started
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section style={{
+        display:"grid",
+        gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",
+        gap:"30px",
+        marginBottom:"120px"
+      }}>
+
+        <div style={{
+          background:"#0f172a",
+          padding:"40px",
+          borderRadius:"14px",
+          border:"1px solid #1e293b"
+        }}>
+          ⚡ Fast Dev
+          <p>Instant HMR powered by Vite</p>
+        </div>
+
+        <div style={{
+          background:"#0f172a",
+          padding:"40px",
+          borderRadius:"14px",
+          border:"1px solid #1e293b"
+        }}>
+          📂 File Routing
+          <p>Pages automatically become routes</p>
+        </div>
+
+        <div style={{
+          background:"#0f172a",
+          padding:"40px",
+          borderRadius:"14px",
+          border:"1px solid #1e293b"
+        }}>
+          🔌 API Routes
+          <p>Backend endpoints inside /pages/api</p>
+        </div>
+
+        <div style={{
+          background:"#0f172a",
+          padding:"40px",
+          borderRadius:"14px",
+          border:"1px solid #1e293b"
+        }}>
+          ⚛ React + TSX
+          <p>Modern React development</p>
+        </div>
+
+      </section>
+
+
+      <section style={{ textAlign:"center" }}>
+
+        <h2>Install</h2>
+
+        <pre style={{
+          marginTop:"20px",
+          background:"#020617",
+          border:"1px solid #1e293b",
+          padding:"30px",
+          borderRadius:"12px",
+          maxWidth:"500px",
+          margin:"auto"
+        }}>
+npx create-nextify-app my-app
+cd my-app
+npm run dev
+        </pre>
+
+      </section>
+
     </main>
-  );
+
+  )
 }
 `
   );

@@ -169,5 +169,3 @@ const reactPluginPath = pathToFileURL(
 
   return { server, vite };
 }
-
-startDevServer();

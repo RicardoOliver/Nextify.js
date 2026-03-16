@@ -82,7 +82,9 @@ export async function startDevServer(options = {}) {
     const port = options.port ?? PORT;
     // pathToFileURL converte C:\... para file:///C:/... — obrigatório no Windows
     const vitePath = pathToFileURL(path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js')).href;
-    const reactPluginPath = pathToFileURL(path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs')).href;
+    const reactPluginPath = pathToFileURL(
+  path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.js')
+).href;
     let createViteServer, react;
     try {
         ({ createServer: createViteServer } = await import(vitePath));

@@ -87,9 +87,10 @@ export async function startDevServer(options = {}) {
   const vitePath = pathToFileURL(
     path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js')
   ).href;
-  const reactPluginPath = pathToFileURL(
-    path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs')
-  ).href;
+  // DEPOIS — caminho correto
+const reactPluginPath = pathToFileURL(
+  path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.js')
+).href;
 
   let createViteServer, react;
   try {

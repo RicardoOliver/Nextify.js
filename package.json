@@ -2,13 +2,45 @@
   "name": "nextify-monorepo",
   "private": false,
   "version": "0.1.22",
-  "description": "Nextify.js monorepo (public)",
-  "author": "Ricardo Oliveira",
+  "description": "Nextify.js — Modern React framework with file-based routing, SSR and a Vite-powered dev server.",
+  "author": {
+    "name": "Ricardo Oliveira",
+    "url": "https://github.com/RicardoOliver"
+  },
   "license": "MIT",
+  "homepage": "https://github.com/RicardoOliver/Nextify.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/RicardoOliver/Nextify.js.git"
+    "url": "git+https://github.com/RicardoOliver/Nextify.js.git"
   },
+  "bugs": {
+    "url": "https://github.com/RicardoOliver/Nextify.js/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/RicardoOliver"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "npm@9",
+  "keywords": [
+    "nextify",
+    "react",
+    "react-framework",
+    "vite",
+    "ssr",
+    "javascript-framework",
+    "frontend-framework",
+    "web-framework",
+    "file-based-routing",
+    "developer-tools",
+    "modern-web",
+    "nextjs-alternative",
+    "fullstack-framework",
+    "react-ssr",
+    "web-development"
+  ],
   "workspaces": [
     "packages/*"
   ],

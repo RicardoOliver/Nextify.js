@@ -17,10 +17,10 @@
     "lint": "echo 'sem lint configurado neste pacote'"
   },
   "dependencies": {
-    "vite": "^5.4.19",
     "@vitejs/plugin-react": "^4.3.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.19"
   },
   "keywords": [
     "nextify",
@@ -30,6 +30,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "typescript": "^5.9.3"
   }
 }

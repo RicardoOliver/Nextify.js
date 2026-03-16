@@ -1,13 +1,10 @@
 {
   "name": "nextify-monorepo",
   "private": false,
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Nextify.js monorepo (public)",
-
   "author": "Ricardo Oliveira",
-
   "license": "MIT",
-
   "repository": {
     "type": "git",
     "url": "https://github.com/RicardoOliver/Nextify.js.git"
@@ -38,4 +35,4 @@
     "typescript": "^5.9.3",
     "vitest": "^2.1.8"
   }
- }
+}

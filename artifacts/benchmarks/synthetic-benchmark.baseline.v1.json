@@ -1,0 +1,29 @@
+{
+  "benchmark": "synthetic-latency",
+  "version": "v1",
+  "generatedFrom": "scripts/run-synthetic-benchmark.mjs",
+  "description": "Baseline usada para detectar regressão no CI para cenários sintéticos de p50/p95.",
+  "scenarios": [
+    {
+      "name": "ssr_reference",
+      "measuredMs": {
+        "p50": 185,
+        "p95": 226
+      }
+    },
+    {
+      "name": "api_health",
+      "measuredMs": {
+        "p50": 75,
+        "p95": 90
+      }
+    },
+    {
+      "name": "build_validation",
+      "measuredMs": {
+        "p50": 251350,
+        "p95": 278750
+      }
+    }
+  ]
+}

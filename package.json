@@ -64,7 +64,9 @@
     "changeset:version": "npx @changesets/cli version",
     "changeset:status": "npx @changesets/cli status --verbose",
     "version:check": "node scripts/check-version-drift.mjs",
-    "benchmark:synthetic": "node scripts/run-synthetic-benchmark.mjs"
+    "benchmark:synthetic": "node scripts/run-synthetic-benchmark.mjs",
+    "benchmark:regression": "node scripts/check-performance-regression.mjs",
+    "engineering-health:panel": "node scripts/generate-engineering-health-panel.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.8",

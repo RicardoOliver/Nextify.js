@@ -1,6 +1,6 @@
 # Internal Audit Report
 
-- Generated at: 2026-03-22T16:21:39.364Z
+- Generated at: 2026-03-22T16:58:19.398Z
 - Score: **85.0%** (85/100)
 - Maturity: **STRONG**
 
@@ -14,10 +14,10 @@
 
 ## Detailed Checks
 
-- [x] **sbom_freshness** (10/10) — SBOM atualizado em 2026-03-22T15:32:47.740Z
-- [x] **traceability_freshness** (10/10) — Matriz de rastreabilidade atualizada em 2026-03-22T15:32:47.740Z
+- [x] **sbom_freshness** (10/10) — SBOM atualizado em 2026-03-22T15:59:49.770Z
+- [x] **traceability_freshness** (10/10) — Matriz de rastreabilidade atualizada em 2026-03-22T15:59:49.770Z
 - [ ] **workspace_version_alignment** (0/8) — 7 workspace(s) com versão desalinhada em relação ao root (0.1.23).
-- [x] **test_density** (15/15) — Densidade aproximada de testes: 70.8% (17 testes / 24 arquivos TS).
+- [x] **test_density** (15/15) — Densidade aproximada de testes: 75.0% (18 testes / 24 arquivos TS).
 - [x] **reliability_report_presence** (10/10) — Último report de confiabilidade encontrado: 2026-03.md.
 - [x] **roadmap_current_year** (8/8) — Roadmap validado para horizonte 2026+.
 - [x] **security_checklist_depth** (10/10) — Checklist de segurança contém ao menos 10 itens acionáveis.

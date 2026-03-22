@@ -51,6 +51,23 @@ jobs:
       - name: Synthetic benchmark gate (p50/p95 por cenário)
         run: npm run benchmark:synthetic
 
+      - name: Performance regression gate (baseline)
+        run: npm run benchmark:regression
+
+      - name: Generate internal audit report
+        run: npm run audit:internal
+
+      - name: Generate engineering health panel
+        run: npm run engineering-health:panel
+
+      - name: Upload engineering health artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: engineering-health-panel
+          path: |
+            artifacts/health/engineering-health-panel.json
+            artifacts/health/engineering-health-panel.md
+
   e2e-smoke:
     name: E2E Smoke (reference app)
     runs-on: ubuntu-latest

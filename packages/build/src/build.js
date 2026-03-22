@@ -2,9 +2,9 @@ import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync, existsSy
 import { createHash } from 'node:crypto';
 import { cpus } from 'node:os';
 import { dirname, extname, join, relative, resolve } from 'node:path';
+import { compileSource, parseRscDirective } from './compiler.js';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
-import { transformSync } from 'esbuild';
 
 const PERFORMANCE_BUDGET = {
   maxSingleAssetKb: 170,
@@ -47,13 +47,6 @@ function parseDependencySpecifiers(sourceCode) {
   return [...dependencies];
 }
 
-function parseRscDirective(sourceCode) {
-  const trimmed = sourceCode.trimStart();
-  if (trimmed.startsWith("'use client'") || trimmed.startsWith('"use client"')) return 'client';
-  if (trimmed.startsWith("'use server'") || trimmed.startsWith('"use server"')) return 'server';
-  return null;
-}
-
 function resolveDependencyPath(modulePath, dependencySpecifier) {
   if (!dependencySpecifier.startsWith('.')) return null;
 
@@ -73,41 +66,6 @@ function resolveDependencyPath(modulePath, dependencySpecifier) {
   }
 
   return null;
-}
-
-function loaderFromPath(modulePath) {
-  const extension = extname(modulePath);
-  switch (extension) {
-    case '.ts':
-      return 'ts';
-    case '.tsx':
-      return 'tsx';
-    case '.jsx':
-      return 'jsx';
-    default:
-      return 'js';
-  }
-}
-
-function compileSource(modulePath, sourceCode) {
-  const result = transformSync(sourceCode, {
-    loader: loaderFromPath(modulePath),
-    sourcemap: true,
-    sourcefile: modulePath,
-    format: 'esm',
-    target: 'es2022',
-    jsx: 'automatic',
-    tsconfigRaw: {
-      compilerOptions: {
-        jsx: 'react-jsx'
-      }
-    }
-  });
-
-  return {
-    code: result.code,
-    map: result.map
-  };
 }
 
 function buildModuleGraph(sourceFiles) {

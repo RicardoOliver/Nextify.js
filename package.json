@@ -70,7 +70,8 @@
     "engineering-health:panel": "node scripts/generate-engineering-health-panel.mjs",
     "upgrade:assist": "node scripts/run-upgrade-assistant.mjs",
     "benchmark:comparative": "node scripts/publish-comparative-benchmark.mjs",
-    "metrics:dora": "node scripts/generate-dora-metrics.mjs"
+    "metrics:dora": "node scripts/generate-dora-metrics.mjs",
+    "bootstrap:dev": "bash scripts/bootstrap-dev.sh"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.8",

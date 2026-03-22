@@ -5,7 +5,7 @@
 <h1 align="center">Nextify.js</h1>
 
 <p align="center">
-  <strong>The modular React framework for performance-critical applications</strong>
+  <strong>Framework React modular com roteamento baseado em arquivos, SSR e runtime de dados com cache por tags</strong>
 </p>
 
 <p align="center">
@@ -37,11 +37,19 @@
 
 ## Overview
 
-**Nextify.js** is a next-generation React framework designed for teams building performance-critical, scalable web applications. Built with a modular architecture, it delivers exceptional developer experience while maintaining enterprise-grade reliability.
+**Nextify.js** é um framework React open source focado em arquitetura modular, DX e performance previsível. O projeto está organizado em monorepo e evolui por pacotes independentes (core, CLI, build, dev server e adapters).
 
 ```bash
 npx create-nextify@latest my-app
 ```
+
+### Estado atual do projeto (v0.2.4)
+
+- ✅ Monorepo com pacotes versionados em `0.2.4`.
+- ✅ Runtime de dados com `loader/action` e invalidação por tags.
+- ✅ Rendering com islands e shell de hidratação.
+- ✅ Build com relatório de performance budget.
+- ✅ Adapters dedicados para AWS Lambda, Cloudflare Workers e Vercel Edge.
 
 <br />
 
@@ -51,26 +59,26 @@ npx create-nextify@latest my-app
 <tr>
 <td width="50%">
 
-### Core Capabilities
+### Capacidades implementadas
 
-- **File-based Routing** — Intuitive routing with dynamic segments
-- **Hybrid Rendering** — SSR, SSG, ISR in a unified engine
-- **Streaming SSR** — React 18+ with Suspense boundaries
-- **Edge Runtime** — Execute at the edge for minimal latency
-- **Smart Caching** — Multi-layer cache with tag-based invalidation
-- **API Routes** — Built-in serverless API endpoints
+- **Roteamento baseado em arquivos** — com segmentos dinâmicos
+- **SSR com streaming** — integração com React 18+
+- **Runtime de dados** — `defineLoader`, `defineAction` e execução no servidor
+- **Cache por tags** — `invalidateDataTags` para invalidação granular
+- **Middleware** — interceptação de request/response no ciclo de render
+- **API Routes** — rotas server-side para endpoints da aplicação
 
 </td>
 <td width="50%">
 
-### Developer Experience
+### Experiência de desenvolvimento
 
-- **Ultra-fast Dev Server** — Millisecond startup with HMR
-- **TypeScript First** — Full type safety out of the box
-- **Plugin System** — Extensible architecture for customization
-- **Zero Config** — Sensible defaults, progressive configuration
-- **Built-in Observability** — Traces, logs, and metrics
-- **Error Overlay** — Rich debugging with source maps
+- **CLI unificada** — `create-nextify` para bootstrap e fluxo local
+- **Dev server dedicado** — hot reload e validação rápida no ciclo de dev
+- **Build modular** — geração de artefatos e manifests por pacote
+- **Adapters de deploy** — suporte específico para edge/serverless
+- **Workspace npm** — padronização de scripts para build/test/typecheck
+- **E2E de referência** — cobertura ponta-a-ponta com app de referência
 
 </td>
 </tr>
@@ -134,7 +142,7 @@ my-app/
 
 ## Architecture
 
-Nextify.js is organized as a **monorepo** with specialized packages for maximum modularity:
+Nextify.js é organizado como **monorepo** com pacotes especializados:
 
 ```
 nextify/
@@ -143,6 +151,9 @@ nextify/
 │   ├── cli/           # Command-line interface (dev, build, start)
 │   ├── build/         # Build pipeline and manifest generation
 │   └── dev-server/    # Development runtime with HMR
+│   ├── adapter-aws-lambda/
+│   ├── adapter-cloudflare/
+│   └── adapter-vercel-edge/
 ├── examples/          # Reference implementations
 └── docs/              # Technical documentation
 ```
@@ -238,10 +249,13 @@ export default defineConfig({
 
 | Package | Version | Description |
 |---------|---------|-------------|
-| [`@nextify/core`](./packages/core) | ![npm](https://img.shields.io/badge/0.1.0-blue) | Core framework runtime |
-| [`@nextify/cli`](./packages/cli) | ![npm](https://img.shields.io/badge/0.1.0-blue) | Command-line interface |
-| [`@nextify/build`](./packages/build) | ![npm](https://img.shields.io/badge/0.1.0-blue) | Build pipeline |
-| [`@nextify/dev-server`](./packages/dev-server) | ![npm](https://img.shields.io/badge/0.1.0-blue) | Development server |
+| [`@nextify/core`](./packages/core) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Core framework runtime |
+| [`create-nextify`](./packages/cli) | ![npm](https://img.shields.io/badge/0.2.4-blue) | CLI para criação e bootstrap de projetos |
+| [`@nextify/build`](./packages/build) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Build pipeline |
+| [`@nextify/dev-server`](./packages/dev-server) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Development server |
+| [`@nextify/adapter-aws-lambda`](./packages/adapter-aws-lambda) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para AWS Lambda |
+| [`@nextify/adapter-cloudflare-workers`](./packages/adapter-cloudflare) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para Cloudflare Workers |
+| [`@nextify/adapter-vercel-edge`](./packages/adapter-vercel-edge) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para Vercel Edge Runtime |
 
 <br />
 

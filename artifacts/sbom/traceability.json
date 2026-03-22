@@ -1,9 +1,12 @@
 {
-  "generatedAt": "2026-03-15T17:33:18.714Z",
+  "generatedAt": "2026-03-22T17:12:37.576Z",
   "lockfile": {
-    "path": null,
-    "sha256": null,
-    "note": "Nenhum lockfile encontrado no repositório durante a geração."
+    "path": "package-lock.json",
+    "sha256": "48f1e48ca937269669d33c8ff2a0c6e36f571cd67a965645277ed7b2ab959d87"
+  },
+  "sbom": {
+    "path": "artifacts/sbom/sbom-npm.json",
+    "sha256": "e436f56887c5b38ae547bf0c4e352531885883ba6a5ebcad4ab3367bbb14d528"
   },
   "attestations": [
     {
@@ -13,5 +16,15 @@
         "npm ls --omit=dev --all --json"
       ]
     }
-  ]
+  ],
+  "signature": {
+    "mode": "local-dev-fallback",
+    "algorithm": "ed25519",
+    "note": "Cosign não encontrado. Assinatura local gerada para trilha criptográfica de desenvolvimento.",
+    "artifacts": {
+      "signature": "artifacts/sbom/sbom-npm.json.sig",
+      "certificate": "artifacts/sbom/sbom-npm.json.cert",
+      "attestation": "artifacts/sbom/sbom-npm.intoto.jsonl"
+    }
+  }
 }

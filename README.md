@@ -125,6 +125,8 @@ my-app/
 | [**Developer Guide**](./docs/DEVELOPER_GUIDE.md) | Complete guide for building with Nextify.js |
 | [**API Reference**](./docs_nextify.md) | Full API documentation |
 | [**Roadmap**](./docs/ROADMAP.md) | Public roadmap and planned features |
+| [**Open Benchmark Methodology**](./docs/OPEN_BENCHMARK_METHODOLOGY.md) | Reproducible comparative benchmark process |
+| [**Assisted Upgrade Playbook**](./docs/ASSISTED_UPGRADE_PLAYBOOK.md) | Guided upgrade flow for breaking changes |
 | [**Contributing**](./CONTRIBUTING.md) | Guidelines for contributors |
 | [**Security**](./SECURITY.md) | Security policies and reporting |
 
@@ -177,6 +179,13 @@ Performance comparison with reference applications:
 | **Bundle Size (minimal)** | < 50KB | 70-150KB |
 
 > Benchmarks measured on reference applications. Results may vary based on application complexity.
+
+Reproduce and publish the comparative report locally:
+
+```bash
+npm run benchmark:synthetic
+npm run benchmark:comparative
+```
 
 <br />
 

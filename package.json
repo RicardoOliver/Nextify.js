@@ -21,7 +21,7 @@
     "url": "https://github.com/sponsors/RicardoOliver"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19.0"
   },
   "packageManager": "npm@9",
   "keywords": [
@@ -45,6 +45,7 @@
     "packages/*"
   ],
   "scripts": {
+    "preinstall": "node scripts/check-node-version.mjs",
     "build": "npm run --workspaces build",
     "dev": "npm --workspace @nextify/dev-server run dev",
     "typecheck": "npm run --workspaces --if-present typecheck",

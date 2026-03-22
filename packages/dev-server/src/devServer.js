@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { createServer as createHttpServer } from 'node:http';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PROJECT_ROOT = process.env.NEXTIFY_ROOT ?? process.cwd();
@@ -168,4 +168,13 @@ const reactPluginPath = pathToFileURL(
   });
 
   return { server, vite };
+}
+
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  startDevServer().catch((err) => {
+    console.error('[nextify] Falha ao iniciar dev server');
+    console.error(err);
+    process.exit(1);
+  });
 }

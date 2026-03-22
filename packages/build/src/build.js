@@ -99,6 +99,17 @@ function buildModuleGraph(sourceFiles) {
   return moduleGraph;
 }
 
+function createModuleSourceMap(relativeModulePath, sourceCode) {
+  const totalLines = sourceCode.split('\n').length;
+  return {
+    version: 3,
+    file: relativeModulePath.replace(/\.[^.]+$/, '.js'),
+    sources: [relativeModulePath],
+    names: [],
+    mappings: Array.from({ length: totalLines }, () => 'AAAA').join(';')
+  };
+}
+
 function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrite) {
   const relativeModulePath = relative(srcDir, modulePath);
   const outputFilePath = join(distDir, relativeModulePath).replace(/\.[^.]+$/, '.js');
@@ -106,9 +117,17 @@ function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrit
 
   if (shouldWrite || !existsSync(outputFilePath) || !existsSync(sourceMapFilePath)) {
     mkdirSync(dirname(outputFilePath), { recursive: true });
+
     const transpiledSource = `${moduleInfo.compiledCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
     writeFileSync(outputFilePath, transpiledSource, 'utf8');
     writeFileSync(sourceMapFilePath, moduleInfo.compiledMap, 'utf8');
+
+    const sourceMap = createModuleSourceMap(relativeModulePath, moduleInfo.sourceCode);
+    const transpiledSource = `${moduleInfo.sourceCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
+
+    writeFileSync(outputFilePath, transpiledSource, 'utf8');
+    writeFileSync(sourceMapFilePath, JSON.stringify(sourceMap, null, 2), 'utf8');
+
   }
 
   return { outputFilePath, sourceMapFilePath };
@@ -133,6 +152,10 @@ function partitionModules(modules, chunkCount) {
   modules.forEach((modulePath, index) => {
     chunks[index % chunks.length].push(modulePath);
   });
+
+
+  return chunks;
+}
 
   return chunks;
 }
@@ -268,6 +291,7 @@ export async function runBuild(cwd = process.cwd(), options = {}) {
   mkdirSync(cacheDir, { recursive: true });
 
   const sourceFiles = listSourceFiles(srcDir);
+
   const moduleGraph = buildModuleGraph(sourceFiles);
   const incrementalBuild = await buildIncrementalArtifacts({
     moduleGraph,
@@ -284,6 +308,7 @@ export async function runBuild(cwd = process.cwd(), options = {}) {
   };
   writeFileSync(join(distDir, 'route-manifest.json'), JSON.stringify(routeManifest, null, 2));
   writeFileSync(join(distDir, 'build-profile.json'), JSON.stringify(incrementalBuild.profile, null, 2));
+
   writeFileSync(join(distDir, 'rsc-manifest.json'), JSON.stringify(createRscManifest(incrementalBuild.profile), null, 2));
 
   writeFileSync(

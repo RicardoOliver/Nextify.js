@@ -20,6 +20,7 @@ export * from './middleware/enterpriseSecurity.js';
 // Plugins
 export * from './plugins/pluginSystem.js';
 export * from './plugins/officialPlugins.js';
+
 // Runtime
 export * from './data/runtime.js';
 export * from './runtime/adapters.js';
@@ -28,4 +29,16 @@ export * from './observability/telemetry.js';
 export * from './observability/distributedTracing.js';
 export * from './observability/otelExporter.js';
 // DX
+
+export * from './cache/taggedCache.js';
+export * from './data/runtime.js';
+export * from './runtime/adapters.js';
+export * from './rendering/islands.js';
+export * from './rendering/rsc.js';
+export * from './rendering/advancedRendering.js';
+export * from './rendering/renderDataPipeline.js';
+export * from './observability/telemetry.js';
+export * from './observability/distributedTracing.js';
+export * from './middleware/enterpriseSecurity.js';
+
 export * from './dx/devtools.js';

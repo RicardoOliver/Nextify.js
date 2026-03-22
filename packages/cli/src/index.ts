@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import http from 'node:http';
+
 import {
   mkdirSync,
   writeFileSync,
@@ -8,6 +9,10 @@ import {
 import { join } from 'node:path';
 // Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
 import { migrateNextProject } from './migrate.js';
+
+import { mkdirSync, writeFileSync, existsSync, cpSync, readdirSync, statSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+
 
 function createProject(target = 'nextify-app') {
   const root = join(process.cwd(), target);
@@ -87,6 +92,68 @@ function runBuild() {
     JSON.stringify({ note: 'Manifesto de rotas gerado pelo build do Nextify', generatedAt: new Date().toISOString() }, null, 2)
   );
   console.log('✔ Build concluído. Artefatos em dist/');
+}
+
+function migrateNextProject(root = process.cwd()) {
+  const pagesDir = join(root, 'pages');
+  const appDir = join(root, 'app');
+
+  if (!existsSync(pagesDir)) {
+    console.error('Nenhuma pasta pages/ encontrada para migração.');
+    process.exit(1);
+  }
+
+  mkdirSync(appDir, { recursive: true });
+
+  const migrated: string[] = [];
+  const queue = [pagesDir];
+
+  while (queue.length) {
+    const current = queue.pop() as string;
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const fullPath = join(current, entry.name);
+      if (entry.isDirectory()) {
+        queue.push(fullPath);
+        continue;
+      }
+
+      const rel = relative(pagesDir, fullPath);
+      if (rel.startsWith('api')) {
+        const target = join(appDir, rel.replace(/^api\//, 'api/'));
+        mkdirSync(join(target, '..'), { recursive: true });
+        cpSync(fullPath, target);
+        migrated.push(`api/${rel}`);
+        continue;
+      }
+
+      if (/\.(tsx|jsx|ts|js)$/.test(entry.name)) {
+        const routeFolder = join(appDir, rel.replace(/\.[^.]+$/, ''));
+        mkdirSync(routeFolder, { recursive: true });
+        const source = readFileSync(fullPath, 'utf8');
+        const transformed = source.includes('export default') ? source : `${source}\nexport default function Page(){return null}`;
+        writeFileSync(join(routeFolder, 'page.tsx'), transformed, 'utf8');
+        migrated.push(rel);
+      }
+    }
+  }
+
+  const migrationConfigPath = join(root, 'nextify.migration.json');
+  writeFileSync(
+    migrationConfigPath,
+    JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        strategy: 'progressive-compat',
+        migrated,
+        notes: ['Revisar páginas dinâmicas e middlewares personalizados após migração automática.']
+      },
+      null,
+      2
+    )
+  );
+
+  console.log(`Migração concluída. ${migrated.length} arquivos convertidos para app/.`);
+  console.log(`Arquivo de compatibilidade: ${migrationConfigPath}`);
 }
 
 function showHelp() {

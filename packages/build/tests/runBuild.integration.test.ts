@@ -5,7 +5,11 @@ import { describe, expect, it } from 'vitest';
 import { runBuild } from '../src/build.js';
 
 describe('runBuild', () => {
+
   it('gera artefatos incrementais com source map, profiling por módulo, HMR e manifesto RSC', async () => {
+
+  it('gera artefatos incrementais com source map e profiling por módulo', async () => {
+
     const cwd = mkdtempSync(join(tmpdir(), 'nextify-build-pass-'));
 
     try {
@@ -22,7 +26,9 @@ describe('runBuild', () => {
       expect(existsSync(join(cwd, 'dist/performance-budget.json'))).toBe(true);
       expect(existsSync(join(cwd, 'dist/build-profile.json'))).toBe(true);
       expect(existsSync(join(cwd, 'dist/hmr-manifest.json'))).toBe(true);
+
       expect(existsSync(join(cwd, 'dist/rsc-manifest.json'))).toBe(true);
+
       expect(existsSync(join(cwd, 'dist/index.js.map'))).toBe(true);
       expect(existsSync(join(cwd, '.nextify/build-cache.json'))).toBe(true);
 

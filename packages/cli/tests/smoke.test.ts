@@ -49,19 +49,25 @@ describe('CLI smoke', () => {
     }
   });
 
+
   it('migrate converte pages para app router com middleware', () => {
+
+  it('migrate converte pages para app router', () => {
+
     const root = mkdtempSync(join(tmpdir(), 'nextify-cli-migrate-'));
 
     try {
       mkdirSync(join(root, 'pages', 'api'), { recursive: true });
       writeFileSync(join(root, 'pages', 'index.tsx'), 'export default function Home(){return <main>home</main>}', 'utf8');
       writeFileSync(join(root, 'pages', 'api', 'hello.ts'), 'export default function handler(){}', 'utf8');
+
       writeFileSync(join(root, 'middleware.ts'), 'export function middleware(){}', 'utf8');
 
       const result = runCli(['migrate'], root);
       expect(result.status).toBe(0);
       expect(existsSync(join(root, 'app', 'index', 'page.tsx'))).toBe(true);
       expect(existsSync(join(root, 'app', 'api', 'hello.ts'))).toBe(true);
+
       expect(existsSync(join(root, 'app', 'middleware.ts'))).toBe(true);
       expect(existsSync(join(root, 'nextify.migration.json'))).toBe(true);
 
@@ -90,6 +96,9 @@ describe('CLI smoke', () => {
       const report = JSON.parse(readFileSync(join(root, 'nextify.migration.json'), 'utf8'));
       expect(report.monorepo).toBe(true);
       expect(report.projects.some((entry: { root: string }) => entry.root === 'apps/shop')).toBe(true);
+
+      expect(existsSync(join(root, 'nextify.migration.json'))).toBe(true);
+
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

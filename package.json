@@ -58,6 +58,7 @@
     "example:reference": "node examples/reference-app/server.mjs",
     "test:e2e": "npm --workspace @nextify/core run test -- tests/referenceApp.e2e.test.ts",
     "sbom:generate": "node scripts/generate-sbom.mjs",
+    "provenance:verify": "node scripts/verify-provenance-policy.mjs",
     "audit:internal": "node scripts/run-internal-audit.mjs",
     "changeset": "npx @changesets/cli",
     "changeset:version": "npx @changesets/cli version",

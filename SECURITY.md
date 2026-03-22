@@ -32,12 +32,15 @@ A release is **blocked** when any of the following is true:
 
 - `npm audit` detects vulnerabilities at **high** or **critical** severity in production dependencies
 - Security CI job fails for any mandatory security control
+- SBOM artifacts are missing Sigstore provenance (`.sig`, `.cert`, `.intoto.jsonl`) or `npm run provenance:verify` fails
 
 Critical and release-blocking findings must be remediated or explicitly risk-accepted by maintainers before merge/release.
 
 ## Security Baseline Controls
 
 - Automated dependency audit in CI (`npm audit --audit-level=high`)
+- Keyless SBOM signing and attestation in CI with Cosign/Sigstore
+- Provenance rejection gate (`npm run provenance:verify`) in CI and release workflows
 - Automated dependency update PRs via Dependabot
 - Required tests and CI checks before merge
 

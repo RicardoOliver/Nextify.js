@@ -1,0 +1,50 @@
+{
+  "benchmark": "synthetic-latency",
+  "thresholdVersion": "v1",
+  "generatedAt": "2026-03-22T16:58:18.436Z",
+  "status": "pass",
+  "scenarios": [
+    {
+      "name": "ssr_reference",
+      "sampleCount": 200,
+      "measuredMs": {
+        "p50": 185,
+        "p95": 226
+      },
+      "thresholdsMs": {
+        "p50": 190,
+        "p95": 260
+      },
+      "status": "pass",
+      "violations": []
+    },
+    {
+      "name": "api_health",
+      "sampleCount": 200,
+      "measuredMs": {
+        "p50": 75,
+        "p95": 90
+      },
+      "thresholdsMs": {
+        "p50": 80,
+        "p95": 120
+      },
+      "status": "pass",
+      "violations": []
+    },
+    {
+      "name": "build_validation",
+      "sampleCount": 120,
+      "measuredMs": {
+        "p50": 251350,
+        "p95": 278750
+      },
+      "thresholdsMs": {
+        "p50": 300000,
+        "p95": 360000
+      },
+      "status": "pass",
+      "violations": []
+    }
+  ]
+}

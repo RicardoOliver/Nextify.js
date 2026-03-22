@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-03-22T16:58:19.868Z",
+  "sources": {
+    "benchmarkPath": "/workspace/Nextify.js/artifacts/benchmarks/synthetic-benchmark.latest.json",
+    "baselinePath": "/workspace/Nextify.js/artifacts/benchmarks/synthetic-benchmark.baseline.v1.json",
+    "traceabilityPath": "/workspace/Nextify.js/artifacts/sbom/traceability.json",
+    "performanceBudgetPath": "/workspace/Nextify.js/packages/build/dist/performance-budget.json",
+    "auditPath": "/workspace/Nextify.js/docs/reliability-reports/latest-internal-audit.md"
+  },
+  "summary": {
+    "syntheticBenchmarkStatus": "pass",
+    "scenariosFailing": [],
+    "internalAuditScorePct": 85,
+    "internalAuditMaturity": "STRONG",
+    "sbomTraceabilityVersion": "unknown",
+    "performanceBudgetCategories": 5
+  },
+  "scenarios": [
+    {
+      "name": "ssr_reference",
+      "status": "pass",
+      "measuredMs": {
+        "p50": 185,
+        "p95": 226
+      },
+      "thresholdsMs": {
+        "p50": 190,
+        "p95": 260
+      },
+      "regressionDeltaPct": {
+        "p50": 0,
+        "p95": 0
+      }
+    },
+    {
+      "name": "api_health",
+      "status": "pass",
+      "measuredMs": {
+        "p50": 75,
+        "p95": 90
+      },
+      "thresholdsMs": {
+        "p50": 80,
+        "p95": 120
+      },
+      "regressionDeltaPct": {
+        "p50": 0,
+        "p95": 0
+      }
+    },
+    {
+      "name": "build_validation",
+      "status": "pass",
+      "measuredMs": {
+        "p50": 251350,
+        "p95": 278750
+      },
+      "thresholdsMs": {
+        "p50": 300000,
+        "p95": 360000
+      },
+      "regressionDeltaPct": {
+        "p50": 0,
+        "p95": 0
+      }
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildRouteManifest,
   createMiddlewareContract,
+  createRouteMatcher,
   detectRuntimeTarget,
   toRoutePath
 } from '../src/routing/fileRouter';
@@ -121,5 +122,20 @@ describe('fileRouter', () => {
       matcher: '/',
       runtime: 'edge'
     });
+  });
+
+  it('prioriza rotas estáticas e extrai params com matcher em trie', () => {
+    const routes = buildRouteManifest([
+      'app/products/new/page.tsx',
+      'app/products/[slug]/page.tsx',
+      'pages/index.tsx'
+    ]);
+
+    const matcher = createRouteMatcher(routes);
+
+    expect(matcher.match('/products/new')?.route.file).toBe('app/products/new/page.tsx');
+    expect(matcher.match('/products/camera')?.params).toEqual({ slug: 'camera' });
+    expect(matcher.match('/products/camera?color=black')?.params).toEqual({ slug: 'camera' });
+    expect(matcher.match('/missing')).toBeNull();
   });
 });

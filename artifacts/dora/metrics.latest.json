@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-03-22T17:34:57.452Z",
+  "period": {
+    "from": "2026-03-01T00:00:00.000Z",
+    "to": "2026-03-22T00:00:00.000Z"
+  },
+  "source": {
+    "eventsPath": "/workspace/Nextify.js/artifacts/dora/events.latest.json",
+    "targetsPath": "/workspace/Nextify.js/artifacts/dora/targets.v1.json"
+  },
+  "values": {
+    "deploymentsTotal": 8,
+    "deploymentsSuccessful": 7,
+    "leadTimeHoursMedian": 14,
+    "changeFailRatePct": 12.5,
+    "mttrHoursAverage": 0.7
+  },
+  "status": "pass",
+  "targets": {
+    "version": "v1",
+    "maxLeadTimeHoursMedian": 48,
+    "maxChangeFailRatePct": 15,
+    "maxMttrHoursAverage": 2
+  },
+  "gates": {
+    "leadTime": true,
+    "changeFailRate": true,
+    "mttr": true
+  }
+}

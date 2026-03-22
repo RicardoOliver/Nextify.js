@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-03-22T17:34:57.084Z",
+  "source": {
+    "trafficPath": "/workspace/Nextify.js/artifacts/observability/production-traffic.latest.json",
+    "thresholdsPath": "/workspace/Nextify.js/artifacts/observability/production-thresholds.v1.json"
+  },
+  "status": "pass",
+  "summary": {
+    "totalRoutes": 3,
+    "routesFailing": 0
+  },
+  "checks": [
+    {
+      "routeId": "ssr-home",
+      "trafficWindow": "7d",
+      "requestCount": 248112,
+      "measured": {
+        "ttfbP95Ms": 244,
+        "latencyP95Ms": 386,
+        "errorRatePct": 0.32
+      },
+      "thresholds": {
+        "maxTtfbP95Ms": 300,
+        "maxLatencyP95Ms": 420,
+        "maxErrorRatePct": 1
+      },
+      "status": "pass",
+      "reasons": []
+    },
+    {
+      "routeId": "ssr-dashboard",
+      "trafficWindow": "7d",
+      "requestCount": 146904,
+      "measured": {
+        "ttfbP95Ms": 281,
+        "latencyP95Ms": 431,
+        "errorRatePct": 0.45
+      },
+      "thresholds": {
+        "maxTtfbP95Ms": 320,
+        "maxLatencyP95Ms": 500,
+        "maxErrorRatePct": 1
+      },
+      "status": "pass",
+      "reasons": []
+    },
+    {
+      "routeId": "api-health",
+      "trafficWindow": "7d",
+      "requestCount": 398201,
+      "measured": {
+        "ttfbP95Ms": 91,
+        "latencyP95Ms": 115,
+        "errorRatePct": 0.08
+      },
+      "thresholds": {
+        "maxTtfbP95Ms": 120,
+        "maxLatencyP95Ms": 150,
+        "maxErrorRatePct": 0.5
+      },
+      "status": "pass",
+      "reasons": []
+    }
+  ]
+}

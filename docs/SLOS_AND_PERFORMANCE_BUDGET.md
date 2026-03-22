@@ -61,3 +61,21 @@ Template padrão: `docs/reliability-reports/REPORT_TEMPLATE.md`.
 - Executar `npm run benchmark:comparative` após o benchmark sintético para gerar `artifacts/benchmarks/comparative-benchmark.latest.json`.
 - A metodologia aberta e reproduzível está em `docs/OPEN_BENCHMARK_METHODOLOGY.md` com pré-requisitos, comandos e limitações declaradas.
 - O relatório comparativo deve acompanhar release candidates para validação externa.
+
+## 7) Feedback loop de produção real (latência/TTFB/error rate)
+
+- Thresholds operacionais ficam versionados em `artifacts/observability/production-thresholds.v1.json`.
+- Snapshot de tráfego real é consolidado em `artifacts/observability/production-traffic.latest.json`.
+- O script `npm run reliability:production-gate` compara p95 de TTFB/latência e taxa de erro das rotas críticas contra os thresholds.
+- O gate roda no CI (`Production reliability feedback loop`) e bloqueia merge quando houver regressão em tráfego real.
+
+## 8) Métricas DORA automatizadas
+
+- Eventos de deployment são consolidados em `artifacts/dora/events.latest.json`.
+- Metas versionadas ficam em `artifacts/dora/targets.v1.json`.
+- O script `npm run metrics:dora` calcula automaticamente:
+  - lead time (mediana),
+  - change fail rate,
+  - MTTR médio.
+- Saídas publicadas: `artifacts/dora/metrics.latest.json` e `artifacts/dora/metrics.latest.md`.
+- O gate roda no CI (`DORA metrics gate`) e bloqueia merge quando as metas não são atendidas.

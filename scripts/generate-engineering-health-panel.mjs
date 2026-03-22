@@ -22,8 +22,12 @@ const baselinePath = join(cwd, 'artifacts', 'benchmarks', 'synthetic-benchmark.b
 const traceabilityPath = join(cwd, 'artifacts', 'sbom', 'traceability.json');
 const performanceBudgetPath = join(cwd, 'packages', 'build', 'dist', 'performance-budget.json');
 const auditPath = join(cwd, 'docs', 'reliability-reports', 'latest-internal-audit.md');
+const productionFeedbackPath = join(cwd, 'artifacts', 'observability', 'production-feedback-report.latest.json');
+const doraMetricsPath = join(cwd, 'artifacts', 'dora', 'metrics.latest.json');
 
-const missing = [benchmarkPath, baselinePath, traceabilityPath, performanceBudgetPath, auditPath].filter((path) => !existsSync(path));
+const missing = [benchmarkPath, baselinePath, traceabilityPath, performanceBudgetPath, auditPath, productionFeedbackPath, doraMetricsPath].filter(
+  (path) => !existsSync(path),
+);
 if (missing.length > 0) {
   console.error('Não foi possível gerar engineering health panel. Arquivos ausentes:');
   for (const path of missing) console.error(`- ${path}`);
@@ -35,6 +39,8 @@ const baseline = readJson(baselinePath);
 const traceability = readJson(traceabilityPath);
 const performanceBudget = readJson(performanceBudgetPath);
 const audit = parseAuditScore(readFileSync(auditPath, 'utf8'));
+const productionFeedback = readJson(productionFeedbackPath);
+const doraMetrics = readJson(doraMetricsPath);
 
 const baselineByScenario = new Map(baseline.scenarios.map((scenario) => [scenario.name, scenario]));
 const scenarioRows = benchmark.scenarios.map((scenario) => {
@@ -63,10 +69,18 @@ const payload = {
     traceabilityPath,
     performanceBudgetPath,
     auditPath,
+    productionFeedbackPath,
+    doraMetricsPath,
   },
   summary: {
     syntheticBenchmarkStatus: benchmark.status,
+    productionReliabilityStatus: productionFeedback.status,
+    doraStatus: doraMetrics.status,
     scenariosFailing: scenarioRows.filter((row) => row.status === 'fail').map((row) => row.name),
+    productionRoutesFailing: productionFeedback.summary?.routesFailing ?? 0,
+    doraLeadTimeHoursMedian: doraMetrics.values?.leadTimeHoursMedian ?? null,
+    doraChangeFailRatePct: doraMetrics.values?.changeFailRatePct ?? null,
+    doraMttrHoursAverage: doraMetrics.values?.mttrHoursAverage ?? null,
     internalAuditScorePct: audit.scorePct,
     internalAuditMaturity: audit.maturity,
     sbomTraceabilityVersion: traceability.version ?? 'unknown',
@@ -93,7 +107,7 @@ const scenarioTable = scenarioRows
   })
   .join('\n');
 
-const markdown = `# Engineering Health Panel\n\n- Generated at: ${payload.generatedAt}\n- Internal Audit: ${audit.scorePct ?? 'n/a'}% (${audit.maturity})\n- Synthetic Benchmark: ${benchmark.status === 'pass' ? '✅ pass' : '❌ fail'}\n- SBOM Traceability version: ${payload.summary.sbomTraceabilityVersion}\n- Performance budget categories: ${payload.summary.performanceBudgetCategories}\n\n## Performance Regression\n\n| Scenario | Status | Measured p50/p95 (ms) | Threshold p50/p95 (ms) | Delta vs baseline (p50/p95) |\n| --- | --- | --- | --- | --- |\n${scenarioTable}\n`;
+const markdown = `# Engineering Health Panel\n\n- Generated at: ${payload.generatedAt}\n- Internal Audit: ${audit.scorePct ?? 'n/a'}% (${audit.maturity})\n- Synthetic Benchmark: ${benchmark.status === 'pass' ? '✅ pass' : '❌ fail'}\n- Production Reliability: ${productionFeedback.status === 'pass' ? '✅ pass' : '❌ fail'}\n- DORA Metrics: ${doraMetrics.status === 'pass' ? '✅ pass' : '❌ fail'}\n- DORA (lead time / fail rate / MTTR): ${(payload.summary.doraLeadTimeHoursMedian ?? 0).toFixed(2)}h / ${(payload.summary.doraChangeFailRatePct ?? 0).toFixed(2)}% / ${(payload.summary.doraMttrHoursAverage ?? 0).toFixed(2)}h\n- SBOM Traceability version: ${payload.summary.sbomTraceabilityVersion}\n- Performance budget categories: ${payload.summary.performanceBudgetCategories}\n\n## Performance Regression\n\n| Scenario | Status | Measured p50/p95 (ms) | Threshold p50/p95 (ms) | Delta vs baseline (p50/p95) |\n| --- | --- | --- | --- | --- |\n${scenarioTable}\n`;
 
 writeFileSync(mdPath, markdown);
 console.log(`Engineering health panel gerado em:\n- ${jsonPath}\n- ${mdPath}`);

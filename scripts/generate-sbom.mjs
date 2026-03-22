@@ -12,6 +12,7 @@ const signaturePath = join(outputDir, 'sbom-npm.json.sig');
 const certificatePath = join(outputDir, 'sbom-npm.json.cert');
 const attestationPath = join(outputDir, 'sbom-npm.intoto.jsonl');
 const predicatePath = join(outputDir, 'sbom-npm.predicate.json');
+const bundlePath = signaturePath;
 const predicateType = 'https://nextify.dev/attestation/sbom-traceability/v1';
 
 const lockfiles = ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'];
@@ -99,14 +100,24 @@ function hasCosignBinary() {
   return probe.status === 0;
 }
 
-function run(command, args) {
+function supportsCosignFlag(command, flag) {
+  const probe = spawnSync('cosign', [command, '--help'], { encoding: 'utf8' });
+  const output = `${probe.stdout ?? ''}${probe.stderr ?? ''}`;
+  return probe.status === 0 && output.includes(flag);
+}
+
+function run(command, args, { inherit = true } = {}) {
   const result = spawnSync(command, args, {
-    stdio: 'inherit',
+    stdio: inherit ? 'inherit' : 'pipe',
     encoding: 'utf8',
     env: process.env,
   });
 
   if (result.status !== 0) {
+    if (!inherit) {
+      if (result.stdout) process.stdout.write(result.stdout);
+      if (result.stderr) process.stderr.write(result.stderr);
+    }
     throw new Error(`Comando falhou: ${command} ${args.join(' ')}`);
   }
 }
@@ -169,15 +180,35 @@ function generateFallbackSignature() {
 }
 
 function generateCosignArtifacts() {
-  run('cosign', [
-    'sign-blob',
-    '--yes',
-    '--output-signature',
-    signaturePath,
-    '--output-certificate',
-    certificatePath,
-    sbomPath,
-  ]);
+  const signBlobSupportsBundle = supportsCosignFlag('sign-blob', '--bundle');
+
+  if (signBlobSupportsBundle) {
+    run('cosign', ['sign-blob', '--yes', '--bundle', bundlePath, sbomPath]);
+
+    writeFileSync(
+      certificatePath,
+      JSON.stringify(
+        {
+          generatedAt,
+          mode: 'sigstore-keyless',
+          format: 'bundle',
+          note: 'Certificado e assinatura armazenados no bundle em artifacts/sbom/sbom-npm.json.sig.',
+        },
+        null,
+        2,
+      ),
+    );
+  } else {
+    run('cosign', [
+      'sign-blob',
+      '--yes',
+      '--output-signature',
+      signaturePath,
+      '--output-certificate',
+      certificatePath,
+      sbomPath,
+    ]);
+  }
 
   run('cosign', [
     'attest-blob',
@@ -193,7 +224,7 @@ function generateCosignArtifacts() {
 
   return {
     mode: 'sigstore-keyless',
-    algorithm: 'sigstore/cosign',
+    algorithm: signBlobSupportsBundle ? 'sigstore/cosign (bundle)' : 'sigstore/cosign',
     note: 'Assinatura keyless e attestation in-toto emitidas via Cosign.',
   };
 }

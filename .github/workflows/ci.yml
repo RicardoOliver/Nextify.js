@@ -9,6 +9,10 @@ on:
     types:
       - published
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   validate:
     name: Validate (lint, typecheck, test)
@@ -84,3 +88,50 @@ jobs:
 
       - name: Run npm audit (fail on high/critical in production deps)
         run: npm audit --omit=dev --audit-level=high
+
+  provenance-gate:
+    name: Provenance Gate (SBOM + attestation)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.8.2
+
+      - name: Generate SBOM
+        run: npm run sbom:generate
+
+      - name: Sign SBOM (keyless Sigstore)
+        env:
+          COSIGN_YES: "true"
+        run: |
+          cosign sign-blob \
+            --output-signature artifacts/sbom/sbom-npm.json.sig \
+            --output-certificate artifacts/sbom/sbom-npm.json.cert \
+            artifacts/sbom/sbom-npm.json
+
+      - name: Generate SBOM attestation
+        env:
+          COSIGN_YES: "true"
+        run: |
+          cosign attest-blob \
+            --bundle artifacts/sbom/sbom-npm.intoto.jsonl \
+            --predicate artifacts/sbom/traceability.json \
+            --type https://nextify.dev/attestation/sbom-traceability/v1 \
+            artifacts/sbom/sbom-npm.json
+
+      - name: Enforce provenance policy (reject invalid artifact)
+        env:
+          COSIGN_CERT_IDENTITY_REGEXP: "^https://github\\.com/${{ github.repository }}/\\.github/workflows/ci\\.yml@.*$"
+          COSIGN_CERT_ISSUER: "https://token.actions.githubusercontent.com"
+        run: npm run provenance:verify

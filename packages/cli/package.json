@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --config ./vitest.config.ts",
+    "test": "npm run build && vitest run --config ./vitest.config.ts",
     "lint": "echo 'sem lint configurado neste pacote'"
   },
   "dependencies": {

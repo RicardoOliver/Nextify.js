@@ -43,3 +43,10 @@ Uma RFC de breaking change só pode ser aprovada com:
 - Toda RFC aprovada deve ser citada no `CHANGELOG.md`.
 - Commits de implementação devem referenciar o ID da RFC.
 - A release responsável deve apontar explicitamente para o guia de migração.
+
+
+## Trilha de upgrade assistido
+
+- Antes de implantar breaking changes, executar `npm run upgrade:assist -- <versao-alvo>`.
+- O plano gerado em `artifacts/upgrades/upgrade-plan.latest.json` deve ser anexado ao PR da RFC e da implementação.
+- Seguir o playbook em `docs/ASSISTED_UPGRADE_PLAYBOOK.md` para garantir rollout canary e rollback testado.

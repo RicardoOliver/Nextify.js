@@ -54,3 +54,10 @@ Template padrão: `docs/reliability-reports/REPORT_TEMPLATE.md`.
 - O gate roda automaticamente no workflow de PR (`.github/workflows/ci.yml`) e no fluxo de release candidate (`.github/workflows/release-canary.yml`).
 - Qualquer regressão acima dos thresholds definidos bloqueia merge/publicação canary até ajuste de performance ou revisão explícita da versão de thresholds.
 
+
+
+## 6) Benchmark comparativo com metodologia aberta
+
+- Executar `npm run benchmark:comparative` após o benchmark sintético para gerar `artifacts/benchmarks/comparative-benchmark.latest.json`.
+- A metodologia aberta e reproduzível está em `docs/OPEN_BENCHMARK_METHODOLOGY.md` com pré-requisitos, comandos e limitações declaradas.
+- O relatório comparativo deve acompanhar release candidates para validação externa.

@@ -1,7 +1,7 @@
 {
   "benchmark": "synthetic-latency",
   "thresholdVersion": "v1",
-  "generatedAt": "2026-03-22T16:58:18.436Z",
+  "generatedAt": "2026-03-22T17:12:42.359Z",
   "status": "pass",
   "scenarios": [
     {

@@ -1,0 +1,79 @@
+{
+  "benchmark": "comparative-open-methodology-v1",
+  "generatedAt": "2026-03-22T17:12:42.895Z",
+  "baselineVersion": "v1",
+  "sourceReports": {
+    "latest": "artifacts/benchmarks/synthetic-benchmark.latest.json",
+    "baseline": "artifacts/benchmarks/synthetic-benchmark.baseline.v1.json"
+  },
+  "methodology": {
+    "environment": {
+      "node": "v22.21.1",
+      "os": "linux",
+      "arch": "x64"
+    },
+    "reproducibility": {
+      "prerequisites": [
+        "npm ci"
+      ],
+      "commands": [
+        "npm run benchmark:synthetic",
+        "npm run benchmark:comparative"
+      ],
+      "notes": [
+        "O comparativo usa baseline público versionado em artifacts/benchmarks/synthetic-benchmark.baseline.v1.json.",
+        "A metodologia, hipóteses e limitações estão documentadas em docs/OPEN_BENCHMARK_METHODOLOGY.md."
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "name": "ssr_reference",
+      "latestMs": {
+        "p50": 185,
+        "p95": 226
+      },
+      "baselineMs": {
+        "p50": 185,
+        "p95": 226
+      },
+      "deltaPct": {
+        "p50": 0,
+        "p95": 0
+      },
+      "interpretation": "Nextify manteve ou melhorou p95 contra baseline."
+    },
+    {
+      "name": "api_health",
+      "latestMs": {
+        "p50": 75,
+        "p95": 90
+      },
+      "baselineMs": {
+        "p50": 75,
+        "p95": 90
+      },
+      "deltaPct": {
+        "p50": 0,
+        "p95": 0
+      },
+      "interpretation": "Nextify manteve ou melhorou p95 contra baseline."
+    },
+    {
+      "name": "build_validation",
+      "latestMs": {
+        "p50": 251350,
+        "p95": 278750
+      },
+      "baselineMs": {
+        "p50": 251350,
+        "p95": 278750
+      },
+      "deltaPct": {
+        "p50": 0,
+        "p95": 0
+      },
+      "interpretation": "Nextify manteve ou melhorou p95 contra baseline."
+    }
+  ]
+}

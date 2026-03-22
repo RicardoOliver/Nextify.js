@@ -181,6 +181,7 @@ function generateFallbackSignature() {
 
 function generateCosignArtifacts() {
   const signBlobSupportsBundle = supportsCosignFlag('sign-blob', '--bundle');
+  const attestBlobSupportsBundle = supportsCosignFlag('attest-blob', '--bundle');
 
   if (signBlobSupportsBundle) {
     run('cosign', ['sign-blob', '--yes', '--bundle', bundlePath, sbomPath]);
@@ -210,22 +211,39 @@ function generateCosignArtifacts() {
     ]);
   }
 
-  run('cosign', [
-    'attest-blob',
-    '--yes',
-    '--type',
-    predicateType,
-    '--output-attestation',
-    attestationPath,
-    '--predicate',
-    predicatePath,
-    sbomPath,
-  ]);
+  if (attestBlobSupportsBundle) {
+    run('cosign', [
+      'attest-blob',
+      '--yes',
+      '--type',
+      predicateType,
+      '--bundle',
+      attestationPath,
+      '--predicate',
+      predicatePath,
+      sbomPath,
+    ]);
+  } else {
+    run('cosign', [
+      'attest-blob',
+      '--yes',
+      '--type',
+      predicateType,
+      '--output-attestation',
+      attestationPath,
+      '--predicate',
+      predicatePath,
+      sbomPath,
+    ]);
+  }
 
   return {
     mode: 'sigstore-keyless',
     algorithm: signBlobSupportsBundle ? 'sigstore/cosign (bundle)' : 'sigstore/cosign',
-    note: 'Assinatura keyless e attestation in-toto emitidas via Cosign.',
+    attestationFormat: attestBlobSupportsBundle ? 'bundle' : 'intoto-jsonl',
+    note: attestBlobSupportsBundle
+      ? 'Assinatura keyless e attestation em bundle emitidas via Cosign.'
+      : 'Assinatura keyless emitida via Cosign; attestation gerada em JSONL por limitação da versão do Cosign.',
   };
 }
 

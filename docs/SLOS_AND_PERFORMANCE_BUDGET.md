@@ -46,3 +46,11 @@ Publicamos o relatório mensal em `docs/reliability-reports/` com:
 - Tendência vs. mês anterior e riscos para o próximo ciclo.
 
 Template padrão: `docs/reliability-reports/REPORT_TEMPLATE.md`.
+
+## 5) Benchmark sintético versionado (PR + release candidates)
+
+- Thresholds de latência ficam versionados em `artifacts/benchmarks/thresholds.synthetic.v1.json` com limites por cenário (p50/p95).
+- O script `npm run benchmark:synthetic` executa cenários sintéticos reprodutíveis e gera o relatório em `artifacts/benchmarks/synthetic-benchmark.latest.json`.
+- O gate roda automaticamente no workflow de PR (`.github/workflows/ci.yml`) e no fluxo de release candidate (`.github/workflows/release-canary.yml`).
+- Qualquer regressão acima dos thresholds definidos bloqueia merge/publicação canary até ajuste de performance ou revisão explícita da versão de thresholds.
+

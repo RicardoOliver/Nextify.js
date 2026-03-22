@@ -11,6 +11,7 @@ const traceabilityPath = join(outputDir, 'traceability.json');
 const signaturePath = join(outputDir, 'sbom-npm.json.sig');
 const certificatePath = join(outputDir, 'sbom-npm.json.cert');
 const attestationPath = join(outputDir, 'sbom-npm.intoto.jsonl');
+const predicatePath = join(outputDir, 'sbom-npm.predicate.json');
 const predicateType = 'https://nextify.dev/attestation/sbom-traceability/v1';
 
 const lockfiles = ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'];
@@ -81,6 +82,17 @@ const traceabilityReport = {
     },
   ],
 };
+
+const attestationPredicate = {
+  generatedAt,
+  lockfile,
+  sbom: {
+    sha256: sbomSha256,
+  },
+  evidence: traceabilityReport.attestations[0].evidence,
+};
+
+writeFileSync(predicatePath, JSON.stringify(attestationPredicate, null, 2));
 
 function hasCosignBinary() {
   const probe = spawnSync('cosign', ['version'], { encoding: 'utf8' });
@@ -174,6 +186,8 @@ function generateCosignArtifacts() {
     predicateType,
     '--output-attestation',
     attestationPath,
+    '--predicate',
+    predicatePath,
     sbomPath,
   ]);
 
@@ -192,6 +206,7 @@ traceabilityReport.signature = {
     signature: 'artifacts/sbom/sbom-npm.json.sig',
     certificate: 'artifacts/sbom/sbom-npm.json.cert',
     attestation: 'artifacts/sbom/sbom-npm.intoto.jsonl',
+    predicate: 'artifacts/sbom/sbom-npm.predicate.json',
   },
 };
 

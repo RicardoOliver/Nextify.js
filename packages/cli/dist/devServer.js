@@ -62,7 +62,7 @@ function buildHtmlShell(routePath) {
       const candidates = ${candidates};
       async function loadPage() {
         let mod;
-        for (const c of candidates) { try { mod = await import(/* @vite-ignore */c); break; } catch {} }
+        for (const c of candidates) { try { mod = await import(c); break; } catch {} }
         const root = document.getElementById('root');
         if (!mod?.default) {
           root.innerHTML = '<div style="font-family:monospace;padding:2rem;color:#e53e3e"><h2>404 — Página não encontrada</h2></div>';
@@ -82,9 +82,7 @@ export async function startDevServer(options = {}) {
     const port = options.port ?? PORT;
     // pathToFileURL converte C:\... para file:///C:/... — obrigatório no Windows
     const vitePath = pathToFileURL(path.join(root, 'node_modules', 'vite', 'dist', 'node', 'index.js')).href;
-    const reactPluginPath = pathToFileURL(
-  path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.js')
-).href;
+    const reactPluginPath = pathToFileURL(path.join(root, 'node_modules', '@vitejs', 'plugin-react', 'dist', 'index.mjs')).href;
     let createViteServer, react;
     try {
         ({ createServer: createViteServer } = await import(vitePath));
@@ -158,4 +156,4 @@ export async function startDevServer(options = {}) {
     });
     return { server, vite };
 }
-
+startDevServer();

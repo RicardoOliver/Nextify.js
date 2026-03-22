@@ -62,7 +62,8 @@
     "changeset": "npx @changesets/cli",
     "changeset:version": "npx @changesets/cli version",
     "changeset:status": "npx @changesets/cli status --verbose",
-    "version:check": "node scripts/check-version-drift.mjs"
+    "version:check": "node scripts/check-version-drift.mjs",
+    "benchmark:synthetic": "node scripts/run-synthetic-benchmark.mjs"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.1.8",

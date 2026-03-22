@@ -44,6 +44,9 @@ jobs:
       - name: Performance budget gate (@nextify/build)
         run: npm --workspace @nextify/build run build
 
+      - name: Synthetic benchmark gate (p50/p95 por cenário)
+        run: npm run benchmark:synthetic
+
   e2e-smoke:
     name: E2E Smoke (reference app)
     runs-on: ubuntu-latest

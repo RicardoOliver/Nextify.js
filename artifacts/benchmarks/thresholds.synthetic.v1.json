@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "description": "Thresholds versionados de p50/p95 para benchmark sintético do CI.",
+  "scenarios": [
+    {
+      "name": "ssr_reference",
+      "thresholdsMs": {
+        "p50": 190,
+        "p95": 260
+      }
+    },
+    {
+      "name": "api_health",
+      "thresholdsMs": {
+        "p50": 80,
+        "p95": 120
+      }
+    },
+    {
+      "name": "build_validation",
+      "thresholdsMs": {
+        "p50": 300000,
+        "p95": 360000
+      }
+    }
+  ]
+}

@@ -86,6 +86,9 @@ jobs:
           git commit -m "docs(changelog): update canary changelog"
           git push
 
+      - name: Synthetic benchmark gate (p50/p95 por cenário)
+        run: npm run benchmark:synthetic
+
       - name: Publish canary packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

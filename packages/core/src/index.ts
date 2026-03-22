@@ -9,3 +9,4 @@ export * from './plugins/pluginSystem.js';
 export * from './cache/taggedCache.js';
 export * from './data/runtime.js';
 export * from './rendering/islands.js';
+export * from './rendering/renderDataPipeline.js';

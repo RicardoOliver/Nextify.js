@@ -54,6 +54,12 @@ jobs:
       - name: Performance regression gate (baseline)
         run: npm run benchmark:regression
 
+      - name: Production reliability feedback loop (real traffic gate)
+        run: npm run reliability:production-gate
+
+      - name: DORA metrics gate
+        run: npm run metrics:dora
+
       - name: Generate internal audit report
         run: npm run audit:internal
 
@@ -67,6 +73,9 @@ jobs:
           path: |
             artifacts/health/engineering-health-panel.json
             artifacts/health/engineering-health-panel.md
+            artifacts/observability/production-feedback-report.latest.json
+            artifacts/dora/metrics.latest.json
+            artifacts/dora/metrics.latest.md
 
   e2e-smoke:
     name: E2E Smoke (reference app)

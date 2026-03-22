@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-03-22T00:00:00.000Z",
+  "window": {
+    "from": "2026-03-15T00:00:00.000Z",
+    "to": "2026-03-22T00:00:00.000Z"
+  },
+  "routes": [
+    {
+      "routeId": "ssr-home",
+      "trafficWindow": "7d",
+      "requestCount": 248112,
+      "metrics": {
+        "ttfbP95Ms": 244,
+        "latencyP95Ms": 386,
+        "errorRatePct": 0.32
+      }
+    },
+    {
+      "routeId": "ssr-dashboard",
+      "trafficWindow": "7d",
+      "requestCount": 146904,
+      "metrics": {
+        "ttfbP95Ms": 281,
+        "latencyP95Ms": 431,
+        "errorRatePct": 0.45
+      }
+    },
+    {
+      "routeId": "api-health",
+      "trafficWindow": "7d",
+      "requestCount": 398201,
+      "metrics": {
+        "ttfbP95Ms": 91,
+        "latencyP95Ms": 115,
+        "errorRatePct": 0.08
+      }
+    }
+  ]
+}

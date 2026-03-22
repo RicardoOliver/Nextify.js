@@ -84,15 +84,24 @@ O diagnóstico técnico do documento descreve três gaps principais (release eng
 ## 4) Itens parcialmente criados ou ainda com gap
 
 ### 4.1 “Feedback loop” de confiabilidade orientado a produção real
-- **Status:** 🟡 Parcial
-- **Leitura:** há gates de benchmark sintético, baseline e relatório mensal; porém o documento original enfatiza também blindagem contra regressões de latência/TTFB em cenários reais de tráfego.
+- **Status:** ✅ Criado
+- **Leitura:** além do benchmark sintético, agora há gate dedicado de tráfego real para bloquear regressões de latência/TTFB e taxa de erro por rota crítica.
 - **Evidência:**
-  - Existe estrutura de SLO + benchmark e gate no CI.
-  - A validação ainda é majoritariamente sintética e baseada em artefato interno.
+  - Script `reliability:production-gate` no `package.json`.
+  - Implementação em `scripts/run-production-feedback-gate.mjs`.
+  - Thresholds versionados em `artifacts/observability/production-thresholds.v1.json`.
+  - Snapshot de tráfego real em `artifacts/observability/production-traffic.latest.json`.
+  - Execução no CI (`Production reliability feedback loop`) em `.github/workflows/ci.yml`.
 
 ### 4.2 Métricas de sucesso DORA operacionalizadas automaticamente
-- **Status:** 🔴 Não evidenciado neste snapshot
-- **Leitura:** o documento sugere DORA (lead time, change fail rate, MTTR) como métrica de sucesso; não foi encontrado pipeline explícito calculando essas métricas automaticamente nos artefatos atuais.
+- **Status:** ✅ Criado
+- **Leitura:** pipeline automatizado calcula lead time, change fail rate e MTTR, publica artefato versionado e aplica gate em CI.
+- **Evidência:**
+  - Script `metrics:dora` no `package.json`.
+  - Implementação em `scripts/generate-dora-metrics.mjs`.
+  - Eventos e metas em `artifacts/dora/events.latest.json` e `artifacts/dora/targets.v1.json`.
+  - Saídas em `artifacts/dora/metrics.latest.json` e `artifacts/dora/metrics.latest.md`.
+  - Execução no CI (`DORA metrics gate`) em `.github/workflows/ci.yml`.
 
 ---
 
@@ -101,6 +110,6 @@ O diagnóstico técnico do documento descreve três gaps principais (release eng
 Se a pergunta for “o que foi criado do plano recomendado no assessment?”, a resposta é:
 
 - **Criado:** praticamente todos os pilares técnicos recomendados (changesets/version drift gate, SLO/perf gates p50/p95, baseline/comparativo, painel de saúde, SBOM assinado com attestation e enforcement de proveniência).
-- **Não criado / parcial:** operacionalização de métricas DORA e eventual expansão do feedback loop para sinais de produção real além do benchmark sintético.
+- **Não criado / parcial:** neste snapshot não há novo gap crítico dos itens originalmente listados.
 
 Em outras palavras, o documento de assessment em 2026-03-22 está **conservador** em relação ao estado atual do repositório: boa parte dos gaps que ele descreve já aparece como implementação concreta.

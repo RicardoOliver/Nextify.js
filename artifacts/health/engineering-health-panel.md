@@ -1,8 +1,11 @@
 # Engineering Health Panel
 
-- Generated at: 2026-03-22T16:58:19.868Z
+- Generated at: 2026-03-22T17:34:57.883Z
 - Internal Audit: 85% (STRONG)
 - Synthetic Benchmark: ✅ pass
+- Production Reliability: ✅ pass
+- DORA Metrics: ✅ pass
+- DORA (lead time / fail rate / MTTR): 14.00h / 12.50% / 0.70h
 - SBOM Traceability version: unknown
 - Performance budget categories: 5
 

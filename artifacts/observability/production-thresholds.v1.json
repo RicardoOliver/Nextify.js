@@ -1,0 +1,24 @@
+{
+  "version": "v1",
+  "description": "Thresholds de produção para blindagem de latência/TTFB em tráfego real.",
+  "routes": [
+    {
+      "routeId": "ssr-home",
+      "maxTtfbP95Ms": 300,
+      "maxLatencyP95Ms": 420,
+      "maxErrorRatePct": 1.0
+    },
+    {
+      "routeId": "ssr-dashboard",
+      "maxTtfbP95Ms": 320,
+      "maxLatencyP95Ms": 500,
+      "maxErrorRatePct": 1.0
+    },
+    {
+      "routeId": "api-health",
+      "maxTtfbP95Ms": 120,
+      "maxLatencyP95Ms": 150,
+      "maxErrorRatePct": 0.5
+    }
+  ]
+}

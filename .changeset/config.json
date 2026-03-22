@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@nextify/adapter-aws-lambda",
+      "@nextify/adapter-cloudflare-workers",
+      "@nextify/adapter-vercel-edge",
+      "@nextify/build",
+      "@nextify/core",
+      "@nextify/dev-server",
+      "create-nextify"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

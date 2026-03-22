@@ -38,3 +38,18 @@ npm run build
 ## Código de conduta
 
 Ao contribuir, você concorda com o [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+
+## Versionamento com Changesets
+
+Este repositório usa **Changesets** para controlar versionamento e changelog em PRs.
+
+- Criar changeset: `npm run changeset`
+- Aplicar bump de versões: `npm run changeset:version`
+- Validar status: `npm run changeset:status`
+
+### Política de sincronização estrita
+
+Todos os pacotes em `packages/*` devem compartilhar a mesma versão.
+O check `npm run version:check` roda no CI e bloqueia merge quando houver drift de versão.
+

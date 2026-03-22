@@ -5,15 +5,33 @@ export function defineLoader(loader) {
 export function defineAction(action) {
     return action;
 }
+export function defineCachePolicy(policy) {
+    return policy;
+}
 const runtimeCache = new TaggedCache();
 export async function executeLoader(loader, request, params, options = {}) {
-    const mode = options.mode ?? 'stale-while-revalidate';
+    const policy = options.policy;
+    const mode = options.mode ?? policy?.mode ?? 'stale-while-revalidate';
     const cache = options.cache ?? runtimeCache;
     const cacheKey = options.cacheKey ?? `${request.method}:${request.url}`;
+    const startedAt = Date.now();
     if (mode !== 'no-store') {
         const cached = cache.get(cacheKey);
         if (cached !== null) {
-            return { data: cached, source: 'cache', tags: [] };
+            const endedAt = Date.now();
+            return {
+                data: cached,
+                source: 'cache',
+                tags: [],
+                trace: {
+                    cacheKey,
+                    mode,
+                    startedAt,
+                    endedAt,
+                    durationMs: endedAt - startedAt,
+                    outcome: 'cache-hit'
+                }
+            };
         }
     }
     const tags = new Set();
@@ -29,11 +47,26 @@ export async function executeLoader(loader, request, params, options = {}) {
         }
     };
     const data = await loader(ctx);
-    const revalidateSeconds = ctx.revalidateSeconds ?? options.defaultRevalidateSeconds ?? 60;
+    const revalidateSeconds =
+        ctx.revalidateSeconds ?? policy?.revalidateSeconds ?? options.defaultRevalidateSeconds ?? 60;
+    const mergedTags = [...new Set([...(policy?.tags ?? []), ...tags])];
     if (mode !== 'no-store') {
-        cache.set(cacheKey, data, revalidateSeconds * 1000, [...tags]);
+        cache.set(cacheKey, data, revalidateSeconds * 1000, mergedTags);
     }
-    return { data, source: 'origin', tags: [...tags] };
+    const endedAt = Date.now();
+    return {
+        data,
+        source: 'origin',
+        tags: mergedTags,
+        trace: {
+            cacheKey,
+            mode,
+            startedAt,
+            endedAt,
+            durationMs: endedAt - startedAt,
+            outcome: 'cache-miss'
+        }
+    };
 }
 export function invalidateDataTags(tags, cache = runtimeCache) {
     return cache.invalidateTags(tags);

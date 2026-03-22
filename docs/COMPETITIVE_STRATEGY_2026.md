@@ -19,31 +19,31 @@ Fazer o Nextify.js ser reconhecido globalmente como framework web open source de
 
 ### 2) Camada de Dados Unificada
 
-- `loaders`/`actions` no servidor com tipagem forte.
-- Cache por tags e invalidação por evento.
+- `loaders`/`actions` com tracing automático e tipagem forte no servidor.
+- Políticas de cache declarativas com invalidação observável por evento/tag.
 - Política de revalidação explícita (`force-cache`, `stale-while-revalidate`, `no-store`).
-- Tracing de tempo de dados por rota.
+- Dados unificados como vantagem competitiva para reduzir duplicação de lógica.
 
 ### 3) Build System Performance-First
 
 - Split por rota e por componente.
 - Otimização incremental de build e rebuild.
-- Guardrails de performance no CI (falha build se budget estourar).
-- Relatório de regressão automática por release.
+- Guardrails de performance default-on no CI (falha de build se budget estourar).
+- Budget por rota e por tipo de asset com relatório por PR e release.
 
 ### 4) DX e Operação de Produção
 
 - CLI completa (`create/dev/build/start`) com templates oficiais.
+- Presets oficiais de deploy (Cloudflare, AWS, Fly.io e self-hosted) com fallback padronizado.
 - Logs estruturados + traces + métricas com integração nativa.
 - Error messages acionáveis com guias de correção.
-- Adaptadores oficiais para Cloudflare, AWS, Fly.io e ambiente self-hosted.
 
 ## Plano de execução em 4 frentes
 
 1. **Framework Core**
    - Contratos estáveis para runtime, roteamento, cache e middleware.
 2. **Developer Platform**
-   - Tooling para migração (`next-to-nextify codemods`) e lint rules.
+   - Ferramenta de migração automatizada com codemods, checker de compatibilidade e plano de rollout por fases.
 3. **Cloud/Infra**
    - Deploy padronizado com templates de produção e observabilidade.
 4. **Open Source Flywheel**

@@ -9,6 +9,7 @@ import {
 } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, extname, join, relative, resolve } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 
 const PERFORMANCE_BUDGET = {

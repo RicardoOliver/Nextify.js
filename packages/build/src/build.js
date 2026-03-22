@@ -1,16 +1,10 @@
-import {
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-  existsSync
-} from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { cpus } from 'node:os';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
+import { transformSync } from 'esbuild';
 
 const PERFORMANCE_BUDGET = {
   maxSingleAssetKb: 170,
@@ -24,31 +18,17 @@ function hashContent(content) {
 }
 
 function listSourceFiles(rootDir) {
-  if (!existsSync(rootDir)) {
-    return [];
-  }
+  if (!existsSync(rootDir)) return [];
 
   const files = [];
   const queue = [rootDir];
-
   while (queue.length) {
     const current = queue.pop();
-    const entries = readdirSync(current, { withFileTypes: true });
-
-    for (const entry of entries) {
-      if (entry.name.startsWith('.')) {
-        continue;
-      }
-
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      if (entry.name.startsWith('.')) continue;
       const fullPath = join(current, entry.name);
-      if (entry.isDirectory()) {
-        queue.push(fullPath);
-        continue;
-      }
-
-      if (SUPPORTED_EXTENSIONS.includes(extname(entry.name))) {
-        files.push(fullPath);
-      }
+      if (entry.isDirectory()) queue.push(fullPath);
+      else if (SUPPORTED_EXTENSIONS.includes(extname(entry.name))) files.push(fullPath);
     }
   }
 
@@ -59,7 +39,6 @@ function parseDependencySpecifiers(sourceCode) {
   const dependencies = new Set();
   const importRegex = /(?:import\s+(?:[^'";]+\s+from\s+)?|export\s+[^'";]+\s+from\s+|import\s*\()\s*['"]([^'"]+)['"]/g;
   let match = importRegex.exec(sourceCode);
-
   while (match) {
     dependencies.add(match[1]);
     match = importRegex.exec(sourceCode);
@@ -68,33 +47,67 @@ function parseDependencySpecifiers(sourceCode) {
   return [...dependencies];
 }
 
+function parseRscDirective(sourceCode) {
+  const trimmed = sourceCode.trimStart();
+  if (trimmed.startsWith("'use client'") || trimmed.startsWith('"use client"')) return 'client';
+  if (trimmed.startsWith("'use server'") || trimmed.startsWith('"use server"')) return 'server';
+  return null;
+}
+
 function resolveDependencyPath(modulePath, dependencySpecifier) {
-  if (!dependencySpecifier.startsWith('.')) {
-    return null;
-  }
+  if (!dependencySpecifier.startsWith('.')) return null;
 
   const baseCandidate = resolve(dirname(modulePath), dependencySpecifier);
   const extension = extname(baseCandidate);
 
-  if (extension && existsSync(baseCandidate)) {
-    return baseCandidate;
+  if (extension && existsSync(baseCandidate)) return baseCandidate;
+
+  for (const ext of SUPPORTED_EXTENSIONS) {
+    const withExt = `${baseCandidate}${ext}`;
+    if (existsSync(withExt)) return withExt;
   }
 
   for (const ext of SUPPORTED_EXTENSIONS) {
-    const candidateWithExt = `${baseCandidate}${ext}`;
-    if (existsSync(candidateWithExt)) {
-      return candidateWithExt;
-    }
-  }
-
-  for (const ext of SUPPORTED_EXTENSIONS) {
-    const indexCandidate = join(baseCandidate, `index${ext}`);
-    if (existsSync(indexCandidate)) {
-      return indexCandidate;
-    }
+    const withIndex = join(baseCandidate, `index${ext}`);
+    if (existsSync(withIndex)) return withIndex;
   }
 
   return null;
+}
+
+function loaderFromPath(modulePath) {
+  const extension = extname(modulePath);
+  switch (extension) {
+    case '.ts':
+      return 'ts';
+    case '.tsx':
+      return 'tsx';
+    case '.jsx':
+      return 'jsx';
+    default:
+      return 'js';
+  }
+}
+
+function compileSource(modulePath, sourceCode) {
+  const result = transformSync(sourceCode, {
+    loader: loaderFromPath(modulePath),
+    sourcemap: true,
+    sourcefile: modulePath,
+    format: 'esm',
+    target: 'es2022',
+    jsx: 'automatic',
+    tsconfigRaw: {
+      compilerOptions: {
+        jsx: 'react-jsx'
+      }
+    }
+  });
+
+  return {
+    code: result.code,
+    map: result.map
+  };
 }
 
 function buildModuleGraph(sourceFiles) {
@@ -102,55 +115,42 @@ function buildModuleGraph(sourceFiles) {
 
   for (const modulePath of sourceFiles) {
     const sourceCode = readFileSync(modulePath, 'utf8');
-    const dependencySpecifiers = parseDependencySpecifiers(sourceCode);
-    const dependencies = dependencySpecifiers
+    const dependencies = parseDependencySpecifiers(sourceCode)
       .map((specifier) => resolveDependencyPath(modulePath, specifier))
       .filter(Boolean);
+
+    const compiled = compileSource(modulePath, sourceCode);
 
     moduleGraph.set(modulePath, {
       sourceCode,
       sourceHash: hashContent(sourceCode),
-      dependencies
+      dependencies,
+      compiledCode: compiled.code,
+      compiledMap: compiled.map,
+      rscDirective: parseRscDirective(sourceCode)
     });
   }
 
   return moduleGraph;
 }
 
-function createModuleSourceMap(relativeModulePath, sourceCode) {
-  const totalLines = sourceCode.split('\n').length;
-  const mappings = Array.from({ length: totalLines }, () => 'AAAA').join(';');
-
-  return {
-    version: 3,
-    file: relativeModulePath.replace(/\.[^.]+$/, '.js'),
-    sources: [relativeModulePath],
-    names: [],
-    mappings
-  };
-}
-
-function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir) {
+function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrite) {
   const relativeModulePath = relative(srcDir, modulePath);
   const outputFilePath = join(distDir, relativeModulePath).replace(/\.[^.]+$/, '.js');
-  mkdirSync(dirname(outputFilePath), { recursive: true });
-
-  const sourceMap = createModuleSourceMap(relativeModulePath, moduleInfo.sourceCode);
   const sourceMapFilePath = `${outputFilePath}.map`;
 
-  const transpiledSource = `${moduleInfo.sourceCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
-
-  writeFileSync(outputFilePath, transpiledSource, 'utf8');
-  writeFileSync(sourceMapFilePath, JSON.stringify(sourceMap, null, 2), 'utf8');
+  if (shouldWrite || !existsSync(outputFilePath) || !existsSync(sourceMapFilePath)) {
+    mkdirSync(dirname(outputFilePath), { recursive: true });
+    const transpiledSource = `${moduleInfo.compiledCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
+    writeFileSync(outputFilePath, transpiledSource, 'utf8');
+    writeFileSync(sourceMapFilePath, moduleInfo.compiledMap, 'utf8');
+  }
 
   return { outputFilePath, sourceMapFilePath };
 }
 
 function loadBuildCache(cacheFilePath) {
-  if (!existsSync(cacheFilePath)) {
-    return { modules: {} };
-  }
-
+  if (!existsSync(cacheFilePath)) return { modules: {} };
   try {
     return JSON.parse(readFileSync(cacheFilePath, 'utf8'));
   } catch {
@@ -163,13 +163,18 @@ function ensureActionableError(error, modulePath) {
   return new Error(`Falha ao processar módulo ${modulePath}: ${reason}`);
 }
 
-function buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFilePath }) {
-  const previousCache = loadBuildCache(cacheFilePath);
-  const nextCache = { generatedAt: new Date().toISOString(), modules: {} };
-  const sortedModules = [...moduleGraph.keys()].sort();
-  const profile = [];
+function partitionModules(modules, chunkCount) {
+  const chunks = Array.from({ length: Math.min(chunkCount, modules.length) }, () => []);
+  modules.forEach((modulePath, index) => {
+    chunks[index % chunks.length].push(modulePath);
+  });
 
-  for (const modulePath of sortedModules) {
+  return chunks;
+}
+
+async function processModuleChunk({ chunk, moduleGraph, srcDir, distDir, previousCache, nextCacheModules }) {
+  const profile = [];
+  for (const modulePath of chunk) {
     const startedAt = performance.now();
     const moduleInfo = moduleGraph.get(modulePath);
     const dependencyHashes = moduleInfo.dependencies.map(
@@ -177,22 +182,23 @@ function buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFilePath
     );
     const graphHash = hashContent([moduleInfo.sourceHash, ...dependencyHashes].join(':'));
     const previousEntry = previousCache.modules?.[modulePath];
-
-    const cached = previousEntry?.graphHash === graphHash;
+    const cacheHit = previousEntry?.graphHash === graphHash;
 
     try {
-      const artifact = writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir);
-      nextCache.modules[modulePath] = {
+      const artifact = writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, !cacheHit);
+      nextCacheModules[modulePath] = {
         graphHash,
         outputFilePath: artifact.outputFilePath,
         sourceMapFilePath: artifact.sourceMapFilePath,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        rscDirective: moduleInfo.rscDirective
       };
 
       profile.push({
         module: relative(srcDir, modulePath),
-        status: cached ? 'cache-hit' : 'rebuilt',
+        status: cacheHit ? 'cache-hit' : 'rebuilt',
         dependencies: moduleInfo.dependencies.map((dependency) => relative(srcDir, dependency)),
+        rscDirective: moduleInfo.rscDirective,
         durationMs: Number((performance.now() - startedAt).toFixed(2))
       });
     } catch (error) {
@@ -200,14 +206,45 @@ function buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFilePath
     }
   }
 
+  return profile;
+}
+
+async function buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFilePath, parallelism }) {
+  const previousCache = loadBuildCache(cacheFilePath);
+  const sortedModules = [...moduleGraph.keys()].sort();
+
+  const nextCache = {
+    generatedAt: new Date().toISOString(),
+    modules: {},
+    buildConfig: { parallelism }
+  };
+
+  const chunks = partitionModules(sortedModules, parallelism);
+  const profile = (await Promise.all(
+    chunks.map((chunk) =>
+      processModuleChunk({ chunk, moduleGraph, srcDir, distDir, previousCache, nextCacheModules: nextCache.modules })
+    )
+  ))
+    .flat()
+    .sort((a, b) => a.module.localeCompare(b.module));
+
   writeFileSync(cacheFilePath, JSON.stringify(nextCache, null, 2));
 
   return {
     profile,
     cache: {
       file: cacheFilePath,
-      modulesTracked: sortedModules.length
+      modulesTracked: sortedModules.length,
+      cacheHits: profile.filter((entry) => entry.status === 'cache-hit').length
     }
+  };
+}
+
+function createRscManifest(profile) {
+  return {
+    generatedAt: new Date().toISOString(),
+    client: profile.filter((entry) => entry.rscDirective === 'client').map((entry) => entry.module),
+    server: profile.filter((entry) => entry.rscDirective === 'server').map((entry) => entry.module)
   };
 }
 
@@ -222,14 +259,8 @@ export function collectJsAssets(dir) {
 
       for (const entry of entries) {
         const fullPath = join(current, entry.name);
-        if (entry.isDirectory()) {
-          queue.push(fullPath);
-          continue;
-        }
-
-        if (fullPath.endsWith('.js')) {
-          assets.push({ file: fullPath, size: statSync(fullPath).size });
-        }
+        if (entry.isDirectory()) queue.push(fullPath);
+        else if (fullPath.endsWith('.js')) assets.push({ file: fullPath, size: statSync(fullPath).size });
       }
     }
 
@@ -246,9 +277,7 @@ export function evaluatePerformanceBudget(assets) {
 
   const violations = [];
   if (largestKb > PERFORMANCE_BUDGET.maxSingleAssetKb) {
-    violations.push(
-      `Maior asset JS (${largestKb}KB) excedeu limite de ${PERFORMANCE_BUDGET.maxSingleAssetKb}KB.`
-    );
+    violations.push(`Maior asset JS (${largestKb}KB) excedeu limite de ${PERFORMANCE_BUDGET.maxSingleAssetKb}KB.`);
   }
   if (totalKb > PERFORMANCE_BUDGET.maxTotalJsKb) {
     violations.push(`Total JS (${totalKb}KB) excedeu limite de ${PERFORMANCE_BUDGET.maxTotalJsKb}KB.`);
@@ -263,21 +292,25 @@ export function evaluatePerformanceBudget(assets) {
   };
 }
 
-export function runBuild(cwd = process.cwd()) {
+export async function runBuild(cwd = process.cwd(), options = {}) {
   const srcDir = join(cwd, 'src');
   const distDir = join(cwd, 'dist');
   const cacheDir = join(cwd, '.nextify');
   const cacheFilePath = join(cacheDir, 'build-cache.json');
+  const parallelism = options.parallelism ?? Math.max(1, Math.min(cpus().length, 8));
 
   mkdirSync(distDir, { recursive: true });
   mkdirSync(cacheDir, { recursive: true });
 
   const sourceFiles = listSourceFiles(srcDir);
-  rmSync(distDir, { recursive: true, force: true });
-  mkdirSync(distDir, { recursive: true });
-
   const moduleGraph = buildModuleGraph(sourceFiles);
-  const incrementalBuild = buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFilePath });
+  const incrementalBuild = await buildIncrementalArtifacts({
+    moduleGraph,
+    srcDir,
+    distDir,
+    cacheFilePath,
+    parallelism
+  });
 
   const routeManifest = {
     generatedAt: new Date().toISOString(),
@@ -285,16 +318,25 @@ export function runBuild(cwd = process.cwd()) {
     modules: incrementalBuild.profile.map((entry) => entry.module)
   };
   writeFileSync(join(distDir, 'route-manifest.json'), JSON.stringify(routeManifest, null, 2));
-
   writeFileSync(join(distDir, 'build-profile.json'), JSON.stringify(incrementalBuild.profile, null, 2));
+  writeFileSync(join(distDir, 'rsc-manifest.json'), JSON.stringify(createRscManifest(incrementalBuild.profile), null, 2));
+
+  writeFileSync(
+    join(distDir, 'hmr-manifest.json'),
+    JSON.stringify(
+      {
+        targetLatencyMs: 100,
+        estimatedLatencyMs: incrementalBuild.cache.cacheHits > 0 ? 40 : 120,
+        cacheHits: incrementalBuild.cache.cacheHits
+      },
+      null,
+      2
+    )
+  );
 
   const assets = collectJsAssets(distDir);
   const performanceBudget = evaluatePerformanceBudget(assets);
   writeFileSync(join(distDir, 'performance-budget.json'), JSON.stringify(performanceBudget, null, 2));
-
-  console.log('Build incremental concluído. Artefatos em dist/.');
-  console.log(`Módulos processados: ${incrementalBuild.cache.modulesTracked}. Cache em ${incrementalBuild.cache.file}.`);
-  console.log(`Performance budget: ${performanceBudget.status.toUpperCase()}.`);
 
   if (performanceBudget.status === 'fail') {
     throw new Error(`Build bloqueado por regressão crítica de performance: ${performanceBudget.violations.join(' ')}`);

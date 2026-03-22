@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mkdtempSync, existsSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, existsSync, readFileSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -44,6 +44,49 @@ describe('CLI smoke', () => {
         note: string;
       };
       expect(manifest.note).toContain('Manifesto de rotas');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('migrate converte pages para app router com middleware', () => {
+    const root = mkdtempSync(join(tmpdir(), 'nextify-cli-migrate-'));
+
+    try {
+      mkdirSync(join(root, 'pages', 'api'), { recursive: true });
+      writeFileSync(join(root, 'pages', 'index.tsx'), 'export default function Home(){return <main>home</main>}', 'utf8');
+      writeFileSync(join(root, 'pages', 'api', 'hello.ts'), 'export default function handler(){}', 'utf8');
+      writeFileSync(join(root, 'middleware.ts'), 'export function middleware(){}', 'utf8');
+
+      const result = runCli(['migrate'], root);
+      expect(result.status).toBe(0);
+      expect(existsSync(join(root, 'app', 'index', 'page.tsx'))).toBe(true);
+      expect(existsSync(join(root, 'app', 'api', 'hello.ts'))).toBe(true);
+      expect(existsSync(join(root, 'app', 'middleware.ts'))).toBe(true);
+      expect(existsSync(join(root, 'nextify.migration.json'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('migrate suporta monorepo em apps/*', () => {
+    const root = mkdtempSync(join(tmpdir(), 'nextify-cli-mono-'));
+
+    try {
+      mkdirSync(join(root, 'apps', 'shop', 'pages'), { recursive: true });
+      writeFileSync(
+        join(root, 'apps', 'shop', 'pages', 'index.tsx'),
+        'export default function Home(){return <main>shop</main>}',
+        'utf8'
+      );
+
+      const result = runCli(['migrate'], root);
+      expect(result.status).toBe(0);
+      expect(existsSync(join(root, 'apps', 'shop', 'app', 'index', 'page.tsx'))).toBe(true);
+
+      const report = JSON.parse(readFileSync(join(root, 'nextify.migration.json'), 'utf8'));
+      expect(report.monorepo).toBe(true);
+      expect(report.projects.some((entry: { root: string }) => entry.root === 'apps/shop')).toBe(true);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

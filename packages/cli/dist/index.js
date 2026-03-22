@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 import http from 'node:http';
+
+import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+// Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
+import { migrateNextProject } from './migrate.js';
+
 import { mkdirSync, writeFileSync, existsSync, cpSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+
 function createProject(target = 'nextify-app') {
     const root = join(process.cwd(), target);
     if (existsSync(root)) {

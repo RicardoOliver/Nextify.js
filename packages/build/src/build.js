@@ -9,6 +9,7 @@ import {
 import { createHash } from 'node:crypto';
 import { cpus } from 'node:os';
 import { dirname, extname, join, relative, resolve } from 'node:path';
+import { compileSource, parseRscDirective } from './compiler.js';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 
@@ -83,10 +84,15 @@ function buildModuleGraph(sourceFiles) {
       .map((specifier) => resolveDependencyPath(modulePath, specifier))
       .filter(Boolean);
 
+    const compiled = compileSource(modulePath, sourceCode);
+
     moduleGraph.set(modulePath, {
       sourceCode,
       sourceHash: hashContent(sourceCode),
-      dependencies
+      dependencies,
+      compiledCode: compiled.code,
+      compiledMap: compiled.map,
+      rscDirective: parseRscDirective(sourceCode)
     });
   }
 
@@ -111,11 +117,17 @@ function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrit
 
   if (shouldWrite || !existsSync(outputFilePath) || !existsSync(sourceMapFilePath)) {
     mkdirSync(dirname(outputFilePath), { recursive: true });
+
+    const transpiledSource = `${moduleInfo.compiledCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
+    writeFileSync(outputFilePath, transpiledSource, 'utf8');
+    writeFileSync(sourceMapFilePath, moduleInfo.compiledMap, 'utf8');
+
     const sourceMap = createModuleSourceMap(relativeModulePath, moduleInfo.sourceCode);
     const transpiledSource = `${moduleInfo.sourceCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
 
     writeFileSync(outputFilePath, transpiledSource, 'utf8');
     writeFileSync(sourceMapFilePath, JSON.stringify(sourceMap, null, 2), 'utf8');
+
   }
 
   return { outputFilePath, sourceMapFilePath };
@@ -141,6 +153,10 @@ function partitionModules(modules, chunkCount) {
     chunks[index % chunks.length].push(modulePath);
   });
 
+
+  return chunks;
+}
+
   return chunks;
 }
 
@@ -162,13 +178,15 @@ async function processModuleChunk({ chunk, moduleGraph, srcDir, distDir, previou
         graphHash,
         outputFilePath: artifact.outputFilePath,
         sourceMapFilePath: artifact.sourceMapFilePath,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        rscDirective: moduleInfo.rscDirective
       };
 
       profile.push({
         module: relative(srcDir, modulePath),
         status: cacheHit ? 'cache-hit' : 'rebuilt',
         dependencies: moduleInfo.dependencies.map((dependency) => relative(srcDir, dependency)),
+        rscDirective: moduleInfo.rscDirective,
         durationMs: Number((performance.now() - startedAt).toFixed(2))
       });
     } catch (error) {
@@ -207,6 +225,14 @@ async function buildIncrementalArtifacts({ moduleGraph, srcDir, distDir, cacheFi
       modulesTracked: sortedModules.length,
       cacheHits: profile.filter((entry) => entry.status === 'cache-hit').length
     }
+  };
+}
+
+function createRscManifest(profile) {
+  return {
+    generatedAt: new Date().toISOString(),
+    client: profile.filter((entry) => entry.rscDirective === 'client').map((entry) => entry.module),
+    server: profile.filter((entry) => entry.rscDirective === 'server').map((entry) => entry.module)
   };
 }
 
@@ -282,6 +308,9 @@ export async function runBuild(cwd = process.cwd(), options = {}) {
   };
   writeFileSync(join(distDir, 'route-manifest.json'), JSON.stringify(routeManifest, null, 2));
   writeFileSync(join(distDir, 'build-profile.json'), JSON.stringify(incrementalBuild.profile, null, 2));
+
+  writeFileSync(join(distDir, 'rsc-manifest.json'), JSON.stringify(createRscManifest(incrementalBuild.profile), null, 2));
+
   writeFileSync(
     join(distDir, 'hmr-manifest.json'),
     JSON.stringify(

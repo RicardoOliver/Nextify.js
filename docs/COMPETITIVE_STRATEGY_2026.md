@@ -36,7 +36,7 @@ Fazer o Nextify.js ser reconhecido globalmente como framework web open source de
 - CLI completa (`create/dev/build/start`) com templates oficiais.
 - Logs estruturados + traces + métricas com integração nativa.
 - Error messages acionáveis com guias de correção.
-- Adaptadores oficiais para Vercel, Cloudflare, AWS e ambiente self-hosted.
+- Adaptadores oficiais para Cloudflare, AWS, Fly.io e ambiente self-hosted.
 
 ## Plano de execução em 4 frentes
 

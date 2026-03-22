@@ -70,7 +70,7 @@ Se o objetivo é “ser melhor que Next.js”, o caminho não é só adicionar f
    - `loaders/actions` com tracing automático, políticas de cache declarativas e invalidation observável.
 
 2. **Operação mais simples que Next.js**
-   - Presets oficiais de deploy (Vercel/Cloudflare/AWS/self-hosted) com fallback padronizado.
+   - Presets oficiais de deploy (Cloudflare/AWS/Fly.io/self-hosted) com fallback padronizado.
 
 3. **Guardrails de performance default-on**
    - Budget por rota e por tipo de asset em CI, com relatório por PR/release.

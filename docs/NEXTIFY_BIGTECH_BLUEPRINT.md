@@ -112,7 +112,7 @@
 - **Runtime Client**: hydration, router transitions, prefetch e cache client-side.
 - **Plugin System**: hooks em build/runtime/dev-server.
 - **Cache Layer**: memória local + Redis/KV distribuído + tag invalidation.
-- **Deployment Adapters**: Node, AWS Lambda, Cloudflare Workers, Vercel Edge.
+- **Deployment Adapters**: Node, AWS Lambda, Cloudflare Workers, Fly.io Machines.
 
 ---
 

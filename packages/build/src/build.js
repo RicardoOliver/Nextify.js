@@ -99,17 +99,6 @@ function buildModuleGraph(sourceFiles) {
   return moduleGraph;
 }
 
-function createModuleSourceMap(relativeModulePath, sourceCode) {
-  const totalLines = sourceCode.split('\n').length;
-  return {
-    version: 3,
-    file: relativeModulePath.replace(/\.[^.]+$/, '.js'),
-    sources: [relativeModulePath],
-    names: [],
-    mappings: Array.from({ length: totalLines }, () => 'AAAA').join(';')
-  };
-}
-
 function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrite) {
   const relativeModulePath = relative(srcDir, modulePath);
   const outputFilePath = join(distDir, relativeModulePath).replace(/\.[^.]+$/, '.js');
@@ -121,13 +110,6 @@ function writeModuleArtifact(modulePath, moduleInfo, srcDir, distDir, shouldWrit
     const transpiledSource = `${moduleInfo.compiledCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
     writeFileSync(outputFilePath, transpiledSource, 'utf8');
     writeFileSync(sourceMapFilePath, moduleInfo.compiledMap, 'utf8');
-
-    const sourceMap = createModuleSourceMap(relativeModulePath, moduleInfo.sourceCode);
-    const transpiledSource = `${moduleInfo.sourceCode}\n//# sourceMappingURL=${relative(dirname(outputFilePath), sourceMapFilePath)}`;
-
-    writeFileSync(outputFilePath, transpiledSource, 'utf8');
-    writeFileSync(sourceMapFilePath, JSON.stringify(sourceMap, null, 2), 'utf8');
-
   }
 
   return { outputFilePath, sourceMapFilePath };
@@ -152,10 +134,6 @@ function partitionModules(modules, chunkCount) {
   modules.forEach((modulePath, index) => {
     chunks[index % chunks.length].push(modulePath);
   });
-
-
-  return chunks;
-}
 
   return chunks;
 }

@@ -379,7 +379,7 @@ export function loadEnv(mode: string) {
 Criar adapters por plataforma:
 
 - `@nextify/adapter-node`
-- `@nextify/adapter-vercel`
+- `@nextify/adapter-flyio`
 - `@nextify/adapter-cloudflare`
 
 Contrato sugerido:

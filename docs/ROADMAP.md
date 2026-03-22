@@ -21,7 +21,7 @@
 ## Fase 2 — Ecosystem (Q3)
 
 - Sistema de plugins v1 com contratos estáveis e guias.
-- Adaptadores oficiais (Vercel, Cloudflare, AWS).
+- Adaptadores oficiais (Cloudflare, AWS, Fly.io e self-hosted).
 - Observabilidade nativa integrada (logs, traces, métricas essenciais).
 
 - Islands architecture v1 para reduzir JS em páginas de conteúdo.

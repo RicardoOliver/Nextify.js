@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Nextify.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Nextify.js" />
+  <img src="https://img.shields.io/badge/Nextify.js-111827?style=for-the-badge&logo=javascript&logoColor=F7DF1E" alt="Nextify.js" />
 </p>
 
 <h1 align="center">Nextify.js</h1>

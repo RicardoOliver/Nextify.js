@@ -55,7 +55,7 @@ Não cobre (sem aviso prévio obrigatório):
   - AWS (EC2, ECS/Fargate, Lambda Node LTS)
   - Google Cloud (Cloud Run, GKE)
   - Azure (App Service Linux, Container Apps)
-  - Vercel (Node runtime suportado)
+  - Plataformas self-hosted e PaaS compatíveis com runtime Node
 - Ambientes fora dessa baseline são best-effort.
 
 ## 2) Canal LTS e janela de suporte

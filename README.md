@@ -287,6 +287,22 @@ npm run dev
 
 <br />
 
+## Disable Vercel Bot Comments on Pull Requests
+
+If Vercel comments are still appearing in your pull requests (for example, `vercel[bot]` posting preview deploy failures), that signal comes from **GitHub/Vercel integration settings**, not from references inside this repository.
+
+Use this checklist to fully disable it:
+
+1. In **Vercel Dashboard → Project → Settings → Git**, disconnect the GitHub repository from the project.
+2. In **GitHub → Repository → Settings → Integrations / Installed GitHub Apps**, remove or restrict the **Vercel** app for this repository.
+3. In **GitHub → Repository → Settings → Webhooks**, remove any Vercel webhook if present.
+4. In **Repository → Settings → Branches / Rulesets**, remove required checks related to Vercel previews if configured.
+
+After that, open a new commit/PR to confirm the `vercel[bot]` comment no longer appears.
+
+
+<br />
+
 ## Community
 
 <table>

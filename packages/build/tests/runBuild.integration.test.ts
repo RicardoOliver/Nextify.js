@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { runBuild } from '../src/build.js';
 
 describe('runBuild', () => {
-  it('gera artefatos incrementais com source map e profiling por módulo', () => {
+  it('gera artefatos incrementais com source map e profiling por módulo', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'nextify-build-pass-'));
 
     try {
@@ -14,13 +14,14 @@ describe('runBuild', () => {
       writeFileSync(join(srcDir, 'index.ts'), "import './shared';\nconsole.log('ok');\n", 'utf8');
       writeFileSync(join(srcDir, 'shared.ts'), "export const value = 'nextify';\n", 'utf8');
 
-      const firstBuild = runBuild(cwd);
-      const secondBuild = runBuild(cwd);
+      const firstBuild = await runBuild(cwd);
+      const secondBuild = await runBuild(cwd);
 
       expect(firstBuild.status).toBe('pass');
       expect(existsSync(join(cwd, 'dist/route-manifest.json'))).toBe(true);
       expect(existsSync(join(cwd, 'dist/performance-budget.json'))).toBe(true);
       expect(existsSync(join(cwd, 'dist/build-profile.json'))).toBe(true);
+      expect(existsSync(join(cwd, 'dist/hmr-manifest.json'))).toBe(true);
       expect(existsSync(join(cwd, 'dist/index.js.map'))).toBe(true);
       expect(existsSync(join(cwd, '.nextify/build-cache.json'))).toBe(true);
 
@@ -34,7 +35,7 @@ describe('runBuild', () => {
     }
   });
 
-  it('falha o build quando detecta regressão crítica no budget', () => {
+  it('falha o build quando detecta regressão crítica no budget', async () => {
     const cwd = mkdtempSync(join(tmpdir(), 'nextify-build-fail-'));
 
     try {
@@ -43,7 +44,7 @@ describe('runBuild', () => {
       writeFileSync(join(srcDir, 'vendor.js'), 'v'.repeat(200 * 1024), 'utf8');
       writeFileSync(join(srcDir, 'app.js'), 'a'.repeat(180 * 1024), 'utf8');
 
-      expect(() => runBuild(cwd)).toThrow(/regressão crítica de performance/);
+      await expect(runBuild(cwd)).rejects.toThrow(/regressão crítica de performance/);
     } finally {
       rmSync(cwd, { recursive: true, force: true });
     }

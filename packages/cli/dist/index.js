@@ -200,7 +200,10 @@ function runProdServer(port) {
 }
 function runBuild() {
     mkdirSync(join(process.cwd(), 'dist'), { recursive: true });
-    writeFileSync(join(process.cwd(), 'dist', 'route-manifest.json'), JSON.stringify({ generatedAt: new Date().toISOString() }, null, 2));
+    writeFileSync(join(process.cwd(), 'dist', 'route-manifest.json'), JSON.stringify({
+        note: 'Manifesto de rotas gerado pelo build do Nextify',
+        generatedAt: new Date().toISOString()
+    }, null, 2));
     console.log('✔ Build concluído. Artefatos em dist/');
 }
 function showHelp() {

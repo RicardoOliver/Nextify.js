@@ -48,6 +48,11 @@
 
 ## Qualidade de release
 
+### Confiabilidade de release
+
+- CI “verde” obrigatória no monorepo inteiro.
+- Meta de regressão crítica < 1 por release estável.
+
 - Nenhuma release sem documentação atualizada.
 - Nenhuma release major sem codemod/migração assistida.
 - Toda release deve possuir changelog rastreável e assinatura de responsáveis.

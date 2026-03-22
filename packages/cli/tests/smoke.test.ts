@@ -49,9 +49,6 @@ describe('CLI smoke', () => {
     }
   });
 
-
-  it('migrate converte pages para app router com middleware', () => {
-
   it('migrate converte pages para app router', () => {
 
     const root = mkdtempSync(join(tmpdir(), 'nextify-cli-migrate-'));

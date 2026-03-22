@@ -52,7 +52,7 @@ try {
   );
 
   console.log('Política de proveniência validada com sucesso.');
-} catch (error) {
+} catch {
   console.error('Falha na validação de proveniência. Artefato rejeitado pela política de release.');
   process.exit(1);
 }

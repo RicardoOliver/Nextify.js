@@ -1,4 +1,11 @@
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync, existsSync } from 'node:fs';
+import {
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+  existsSync
+} from 'node:fs';
 import { createHash } from 'node:crypto';
 import { cpus } from 'node:os';
 import { dirname, extname, join, relative, resolve } from 'node:path';

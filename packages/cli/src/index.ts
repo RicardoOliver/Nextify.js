@@ -34,15 +34,15 @@ function createProject(target = 'nextify-app') {
           start: 'nextify start'
         },
         dependencies: {
-          react: '^18.3.1',
-          'react-dom': '^18.3.1'
+          react: '^19.2.4',
+          'react-dom': '^19.2.4'
         },
         devDependencies: {
           'create-nextify': 'latest',
-          vite: '^5.4.19',
-          '@vitejs/plugin-react': '^4.3.4',
-          '@types/react': '^18.3.1',
-          '@types/react-dom': '^18.3.1',
+          vite: '^8.0.1',
+          '@vitejs/plugin-react': '^6.0.1',
+          '@types/react': '^19.2.2',
+          '@types/react-dom': '^19.2.2',
           typescript: '^5.0.0'
         }
       },

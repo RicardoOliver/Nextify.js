@@ -1,12 +1,13 @@
 export class TaggedCache {
     entries = new Map();
     tagIndex = new Map();
+    listeners = new Set();
     get(key) {
         const entry = this.entries.get(key);
         if (!entry)
             return null;
         if (Date.now() - entry.createdAt > entry.ttlMs) {
-            this.invalidateKey(key);
+            this.invalidateKey(key, 'expired');
             return null;
         }
         return entry.value;
@@ -25,22 +26,26 @@ export class TaggedCache {
                 this.tagIndex.set(tag, new Set());
             this.tagIndex.get(tag)?.add(key);
         }
+        this.emit({ type: 'set', key, tags: uniqueTags, ttlMs, value });
     }
     invalidateTag(tag) {
         const keys = this.tagIndex.get(tag);
         if (!keys)
             return 0;
         let removed = 0;
-        for (const key of keys) {
+        for (const key of [...keys]) {
             removed += this.invalidateKey(key);
         }
         this.tagIndex.delete(tag);
+        this.emit({ type: 'invalidate-tag', tag, removedKeys: removed });
         return removed;
     }
     invalidateTags(tags) {
-        return tags.reduce((acc, tag) => acc + this.invalidateTag(tag), 0);
+        const removed = tags.reduce((acc, tag) => acc + this.invalidateTag(tag), 0);
+        this.emit({ type: 'invalidate-tags', tags: [...tags], removedKeys: removed });
+        return removed;
     }
-    invalidateKey(key) {
+    invalidateKey(key, reason = 'manual') {
         const entry = this.entries.get(key);
         if (!entry)
             return 0;
@@ -51,12 +56,23 @@ export class TaggedCache {
                 this.tagIndex.delete(tag);
         }
         this.entries.delete(key);
+        this.emit({ type: 'invalidate-key', key, tags: [...entry.tags], reason });
         return 1;
+    }
+    subscribe(listener) {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
     }
     stats() {
         return {
             keys: this.entries.size,
-            tags: this.tagIndex.size
+            tags: this.tagIndex.size,
+            listeners: this.listeners.size
         };
+    }
+    emit(event) {
+        for (const listener of this.listeners) {
+            listener(event);
+        }
     }
 }

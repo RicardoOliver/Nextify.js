@@ -12,7 +12,7 @@ describe('TaggedCache', () => {
 
     nowSpy.mockReturnValue(1601);
     expect(cache.get('k1')).toBeNull();
-    expect(cache.stats()).toEqual({ keys: 0, tags: 0 });
+    expect(cache.stats()).toEqual({ keys: 0, tags: 0, listeners: 0 });
 
     nowSpy.mockRestore();
   });
@@ -28,6 +28,21 @@ describe('TaggedCache', () => {
 
     expect(cache.invalidateKey('b')).toBe(1);
     expect(cache.invalidateTags(['shared', 'inexistente'])).toBe(0);
-    expect(cache.stats()).toEqual({ keys: 0, tags: 0 });
+    expect(cache.stats()).toEqual({ keys: 0, tags: 0, listeners: 0 });
+  });
+
+  it('emite eventos observáveis de invalidação', () => {
+    const cache = new TaggedCache<number>();
+    const events: string[] = [];
+
+    const unsubscribe = cache.subscribe((event) => {
+      events.push(event.type);
+    });
+
+    cache.set('product:1', 1, 60_000, ['products']);
+    cache.invalidateTags(['products']);
+    unsubscribe();
+
+    expect(events).toEqual(['set', 'invalidate-key', 'invalidate-tag', 'invalidate-tags']);
   });
 });

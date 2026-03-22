@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { TaggedCache } from '../src/cache/taggedCache';
-import { executeLoader, invalidateDataTags } from '../src/data/runtime';
+import { defineCachePolicy, executeLoader, invalidateDataTags } from '../src/data/runtime';
 
 describe('executeLoader integração com cache e tags', () => {
   it('cache miss/hit e invalidação por tag', async () => {
@@ -20,6 +20,7 @@ describe('executeLoader integração com cache e tags', () => {
 
     expect(first.source).toBe('origin');
     expect(first.tags).toEqual(['products', 'inventory']);
+    expect(first.trace.outcome).toBe('cache-miss');
     expect(loaderSpy).toHaveBeenCalledTimes(1);
 
     const second = await executeLoader(loaderSpy, request, undefined, {
@@ -28,6 +29,7 @@ describe('executeLoader integração com cache e tags', () => {
     });
 
     expect(second.source).toBe('cache');
+    expect(second.trace.outcome).toBe('cache-hit');
     expect(loaderSpy).toHaveBeenCalledTimes(1);
 
     expect(invalidateDataTags(['products'], cache)).toBe(1);
@@ -39,5 +41,31 @@ describe('executeLoader integração com cache e tags', () => {
 
     expect(third.source).toBe('origin');
     expect(loaderSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('aplica política declarativa de cache e tags padrão', async () => {
+    const cache = new TaggedCache<unknown>();
+    const nowSpy = vi.spyOn(Date, 'now');
+    nowSpy.mockImplementation(() => 100);
+
+    const loader = vi.fn(async () => ({ ok: true }));
+    const policy = defineCachePolicy({
+      mode: 'force-cache',
+      revalidateSeconds: 30,
+      tags: ['catalog']
+    });
+
+    const result = await executeLoader(loader, new Request('http://localhost/catalog'), undefined, {
+      cache,
+      cacheKey: 'catalog:list',
+      policy
+    });
+
+    expect(result.tags).toEqual(['catalog']);
+    expect(result.trace.mode).toBe('force-cache');
+    expect(result.trace.durationMs).toBeGreaterThanOrEqual(0);
+    expect(cache.get('catalog:list')).toEqual({ ok: true });
+
+    nowSpy.mockRestore();
   });
 });

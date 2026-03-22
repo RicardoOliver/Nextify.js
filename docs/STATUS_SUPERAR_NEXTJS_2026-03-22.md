@@ -38,6 +38,8 @@ Ainda **não** dá para afirmar que o Nextify.js superou o Next.js no mercado ge
 4. **Confiabilidade de release em nível enterprise**
    - CI monorepo continuamente verde e meta de regressão crítica < 1 por release estável.
 
+> Plano de execução detalhado em `docs/PLANO_P0_PARIDADE_NEXTIFY_2026-03-22.md`.
+
 ### P1 (onde pode ficar “melhor”, não só equivalente)
 1. Ferramenta robusta de migração Next.js → Nextify.js (checker + codemods + rollout).
 2. Adapters oficiais maduros (Cloudflare/AWS/self-hosted etc.).

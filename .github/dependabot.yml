@@ -1,20 +1,67 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
+      interval: 'daily'
+      time: '05:00'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 20
     labels:
-      - "dependencies"
-      - "security"
+      - 'dependencies'
+      - 'security'
     commit-message:
-      prefix: "chore(deps)"
+      prefix: 'chore(deps)'
+    versioning-strategy: 'increase'
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/packages/cli'
     schedule:
-      interval: "weekly"
+      interval: 'daily'
+      time: '05:10'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 20
     labels:
-      - "dependencies"
-      - "ci"
+      - 'dependencies'
+      - 'security'
+    commit-message:
+      prefix: 'chore(deps)'
+    versioning-strategy: 'increase'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/core'
+    schedule:
+      interval: 'daily'
+      time: '05:20'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 20
+    labels:
+      - 'dependencies'
+      - 'security'
+    commit-message:
+      prefix: 'chore(deps)'
+    versioning-strategy: 'increase'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/dev-server'
+    schedule:
+      interval: 'daily'
+      time: '05:30'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 20
+    labels:
+      - 'dependencies'
+      - 'security'
+    commit-message:
+      prefix: 'chore(deps)'
+    versioning-strategy: 'increase'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      time: '05:40'
+      timezone: 'Etc/UTC'
+    labels:
+      - 'dependencies'
+      - 'ci'

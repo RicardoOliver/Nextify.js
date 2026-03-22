@@ -67,7 +67,7 @@ jobs:
         run: npm run engineering-health:panel
 
       - name: Upload engineering health artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: engineering-health-panel
           path: |

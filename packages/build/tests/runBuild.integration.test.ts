@@ -5,9 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { runBuild } from '../src/build.js';
 
 describe('runBuild', () => {
-
-  it('gera artefatos incrementais com source map, profiling por módulo, HMR e manifesto RSC', async () => {
-
   it('gera artefatos incrementais com source map e profiling por módulo', async () => {
 
     const cwd = mkdtempSync(join(tmpdir(), 'nextify-build-pass-'));

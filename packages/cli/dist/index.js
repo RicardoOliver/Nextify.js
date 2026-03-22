@@ -2,6 +2,8 @@
 import http from 'node:http';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+// Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
+import { migrateNextProject } from './migrate.js';
 function createProject(target = 'nextify-app') {
     const root = join(process.cwd(), target);
     if (existsSync(root)) {
@@ -16,11 +18,11 @@ function createProject(target = 'nextify-app') {
         scripts: {
             dev: 'nextify dev',
             build: 'nextify build',
-            start: 'nextify start',
+            start: 'nextify start'
         },
         dependencies: {
             react: '^18.3.1',
-            'react-dom': '^18.3.1',
+            'react-dom': '^18.3.1'
         },
         devDependencies: {
             'create-nextify': 'latest',
@@ -28,158 +30,15 @@ function createProject(target = 'nextify-app') {
             '@vitejs/plugin-react': '^4.3.4',
             '@types/react': '^18.3.1',
             '@types/react-dom': '^18.3.1',
-            typescript: '^5.0.0',
-        },
+            typescript: '^5.0.0'
+        }
     }, null, 2));
-    writeFileSync(join(root, 'pages', 'index.tsx'), `export default function Home() {
-
-  return (
-
-    <main style={{
-      minHeight:"100vh",
-      background:"#020617",
-      color:"white",
-      fontFamily:"Inter, sans-serif",
-      padding:"80px"
-    }}>
-
-      <section style={{ textAlign:"center", marginBottom:"100px" }}>
-
-        <h1 style={{
-          fontSize:"72px",
-          fontWeight:"bold",
-          background:"linear-gradient(90deg,#6366f1,#7c3aed)",
-          WebkitBackgroundClip:"text",
-          color:"transparent"
-        }}>
-          Nextify ⚡
-        </h1>
-
-        <p style={{ fontSize:"22px", opacity:0.8 }}>
-          The modern React framework powered by Vite
-        </p>
-
-        <div style={{ marginTop:"40px" }}>
-
-          <button style={{
-            padding:"16px 32px",
-            borderRadius:"12px",
-            border:"none",
-            background:"linear-gradient(90deg,#6366f1,#7c3aed)",
-            color:"white",
-            fontWeight:"bold",
-            cursor:"pointer"
-          }}>
-            Get Started
-          </button>
-
-        </div>
-
-      </section>
-
-
-      <section style={{
-        display:"grid",
-        gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",
-        gap:"30px",
-        marginBottom:"120px"
-      }}>
-
-        <div style={{
-          background:"#0f172a",
-          padding:"40px",
-          borderRadius:"14px",
-          border:"1px solid #1e293b"
-        }}>
-          ⚡ Fast Dev
-          <p>Instant HMR powered by Vite</p>
-        </div>
-
-        <div style={{
-          background:"#0f172a",
-          padding:"40px",
-          borderRadius:"14px",
-          border:"1px solid #1e293b"
-        }}>
-          📂 File Routing
-          <p>Pages automatically become routes</p>
-        </div>
-
-        <div style={{
-          background:"#0f172a",
-          padding:"40px",
-          borderRadius:"14px",
-          border:"1px solid #1e293b"
-        }}>
-          🔌 API Routes
-          <p>Backend endpoints inside /pages/api</p>
-        </div>
-
-        <div style={{
-          background:"#0f172a",
-          padding:"40px",
-          borderRadius:"14px",
-          border:"1px solid #1e293b"
-        }}>
-          ⚛ React + TSX
-          <p>Modern React development</p>
-        </div>
-
-      </section>
-
-
-      <section style={{ textAlign:"center" }}>
-
-        <h2>Install</h2>
-
-        <pre style={{
-          marginTop:"20px",
-          background:"#020617",
-          border:"1px solid #1e293b",
-          padding:"30px",
-          borderRadius:"12px",
-          maxWidth:"500px",
-          margin:"auto"
-        }}>
-npx create-nextify-app my-app
-cd my-app
-npm run dev
-        </pre>
-
-      </section>
-
-    </main>
-
-  )
-}
-`);
-    writeFileSync(join(root, 'pages', 'api', 'health.ts'), `export default async function handler() {
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { 'content-type': 'application/json' },
-  });
-}
-`);
-    writeFileSync(join(root, 'tsconfig.json'), JSON.stringify({
-        compilerOptions: {
-            target: 'ES2022',
-            module: 'ESNext',
-            moduleResolution: 'bundler',
-            jsx: 'react-jsx',
-            strict: true,
-            esModuleInterop: true,
-            skipLibCheck: true,
-        },
-        include: ['pages', 'src'],
-    }, null, 2));
+    writeFileSync(join(root, 'pages', 'index.tsx'), `export default function Home() { return <main>Nextify</main>; }`);
+    writeFileSync(join(root, 'pages', 'api', 'health.ts'), `export default async function handler() { return new Response(JSON.stringify({ ok: true }), { headers: { 'content-type': 'application/json' } }); }`);
     console.log(`\n✔ Projeto criado em: ${root}`);
-    console.log('\nPróximos passos:\n');
-    console.log(`  cd ${target}`);
-    console.log('  npm install');
-    console.log('  npm run dev\n');
 }
 async function runDevServer(port) {
     try {
-        // devServer.js está embutido no próprio pacote create-nextify (dist/devServer.js)
         const devServerUrl = new URL('./devServer.js', import.meta.url).href;
         const { startDevServer } = await import(devServerUrl);
         await startDevServer({ root: process.cwd(), port });
@@ -200,10 +59,7 @@ function runProdServer(port) {
 }
 function runBuild() {
     mkdirSync(join(process.cwd(), 'dist'), { recursive: true });
-    writeFileSync(join(process.cwd(), 'dist', 'route-manifest.json'), JSON.stringify({
-        note: 'Manifesto de rotas gerado pelo build do Nextify',
-        generatedAt: new Date().toISOString()
-    }, null, 2));
+    writeFileSync(join(process.cwd(), 'dist', 'route-manifest.json'), JSON.stringify({ note: 'Manifesto de rotas gerado pelo build do Nextify', generatedAt: new Date().toISOString() }, null, 2));
     console.log('✔ Build concluído. Artefatos em dist/');
 }
 function showHelp() {
@@ -218,6 +74,7 @@ ou
   nextify dev [porta]
   nextify build
   nextify start [porta]
+  nextify migrate
 `);
 }
 const args = process.argv.slice(2);
@@ -241,5 +98,10 @@ switch (command) {
     case 'start':
         runProdServer(port);
         break;
-    default: createProject(command);
+    case 'migrate':
+        migrateNextProject(process.cwd());
+        break;
+    default:
+        createProject(command);
 }
+export { migrateNextProject };

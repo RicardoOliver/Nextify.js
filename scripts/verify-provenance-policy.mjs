@@ -94,8 +94,13 @@ async function main() {
     ? `--certificate-identity "${certIdentity}"`
     : `--certificate-identity-regexp "${certIdentityRegexp}"`;
 
+  const verifyBlobFlags =
+    certJson?.mode === 'sigstore-keyless' && certJson?.format === 'bundle'
+      ? '--bundle artifacts/sbom/sbom-npm.json.sig'
+      : '--signature artifacts/sbom/sbom-npm.json.sig --certificate artifacts/sbom/sbom-npm.json.cert';
+
   run(
-    `cosign verify-blob ${identityFlag} --certificate-oidc-issuer "${certIssuer}" --signature artifacts/sbom/sbom-npm.json.sig --certificate artifacts/sbom/sbom-npm.json.cert artifacts/sbom/sbom-npm.json`,
+    `cosign verify-blob ${identityFlag} --certificate-oidc-issuer "${certIssuer}" ${verifyBlobFlags} artifacts/sbom/sbom-npm.json`,
   );
 
   run(

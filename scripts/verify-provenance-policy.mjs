@@ -29,6 +29,19 @@ const run = (cmd) => {
   });
 };
 
+const supportsCosignFlag = (command, flag) => {
+  try {
+    const output = execSync(`cosign ${command} --help`, {
+      encoding: 'utf8',
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    return output.includes(flag);
+  } catch {
+    return false;
+  }
+};
+
 function ensure(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -96,15 +109,17 @@ async function main() {
 
   const verifyBlobFlags =
     certJson?.mode === 'sigstore-keyless' && certJson?.format === 'bundle'
-      ? '--bundle artifacts/sbom/sbom-npm.json.sig'
+      ? `${supportsCosignFlag('verify-blob', '--new-bundle-format') ? '--new-bundle-format ' : ''}--bundle artifacts/sbom/sbom-npm.json.sig`
       : '--signature artifacts/sbom/sbom-npm.json.sig --certificate artifacts/sbom/sbom-npm.json.cert';
+
+  const verifyAttestationFlags = `${supportsCosignFlag('verify-blob-attestation', '--new-bundle-format') ? '--new-bundle-format ' : ''}--bundle artifacts/sbom/sbom-npm.intoto.jsonl`;
 
   run(
     `cosign verify-blob ${identityFlag} --certificate-oidc-issuer "${certIssuer}" ${verifyBlobFlags} artifacts/sbom/sbom-npm.json`,
   );
 
   run(
-    `cosign verify-blob-attestation ${identityFlag} --certificate-oidc-issuer "${certIssuer}" --type https://nextify.dev/attestation/sbom-traceability/v1 --bundle artifacts/sbom/sbom-npm.intoto.jsonl artifacts/sbom/sbom-npm.json`,
+    `cosign verify-blob-attestation ${identityFlag} --certificate-oidc-issuer "${certIssuer}" --type https://nextify.dev/attestation/sbom-traceability/v1 ${verifyAttestationFlags} artifacts/sbom/sbom-npm.json`,
   );
 
   console.log('Política de proveniência validada com sucesso.');

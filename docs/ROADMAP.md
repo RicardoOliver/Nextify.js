@@ -15,6 +15,7 @@
 - CLI estável (`dev`, `build`, `start`) com templates oficiais.
 - SSR/SSG/ISR com documentação completa e exemplos executáveis.
 - Baseline de benchmark público para comparação contínua.
+- Programa P0 de paridade de plataforma com plano tático (routing moderno, rendering/dados, build incremental e confiabilidade de release).
 
 - Publicar `Competitive Strategy 2026` com métricas e critérios de vitória.
 

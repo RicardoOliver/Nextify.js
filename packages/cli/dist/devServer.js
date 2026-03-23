@@ -54,6 +54,53 @@ function buildHtmlShell(routePath) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nextify.js</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background:
+          radial-gradient(circle at 0% 0%, #e0e7ff 0%, #f8fafc 45%, #ffffff 100%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #0f172a;
+      }
+
+      #root {
+        min-height: 100vh;
+        padding: clamp(20px, 4vw, 40px);
+      }
+
+      body main {
+        width: min(1100px, 100%);
+        margin: 0 auto;
+        padding: clamp(24px, 4vw, 48px);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: 0 24px 80px -45px rgba(15, 23, 42, 0.5);
+      }
+
+      body h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+
+      body p {
+        margin: 14px 0 0;
+        color: #334155;
+        max-width: 68ch;
+        line-height: 1.6;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

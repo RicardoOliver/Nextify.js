@@ -140,6 +140,7 @@ function buildHtmlShell(routePath) {
                 <a href="https://github.com/RicardoOliver/Nextify.js#readme" target="_blank" rel="noreferrer" style="border:1px solid #94a3b84a;border-radius:10px;padding:10px 16px;color:#0f172a;text-decoration:none;font-weight:700">Read Docs</a>
               </div>
               <code id="nextify-command" style="display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff">npx create-nextify@latest my-app</code>
+              <p>Exemplo rápido: adicione também <code>pages/api/health.ts</code> para validar rotas de API.</p>
             </main>
           \`;
           const copyButton = document.getElementById('nextify-get-started');
@@ -160,10 +161,6 @@ function buildHtmlShell(routePath) {
               await navigator.clipboard.writeText(command);
             } catch {}
           });
-
-              <p>Exemplo rápido: adicione também <code>pages/api/health.ts</code> para validar rotas de API.</p>
-            </main>
-          \`;
 
           return;
         }

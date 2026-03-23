@@ -133,9 +133,38 @@ function buildHtmlShell(routePath) {
             <main>
               <h1>Bem-vindo ao Nextify.js 🚀</h1>
               <p>Seu projeto está no ar. Crie <code>pages/index.tsx</code> para personalizar esta tela inicial.</p>
+
+              <p>Comece agora com o comando abaixo e acesse a documentação completa.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+                <button id="nextify-get-started" type="button" style="border:none;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#2563eb);padding:10px 16px;font-weight:700;cursor:pointer">Get Started →</button>
+                <a href="https://github.com/RicardoOliver/Nextify.js#readme" target="_blank" rel="noreferrer" style="border:1px solid #94a3b84a;border-radius:10px;padding:10px 16px;color:#0f172a;text-decoration:none;font-weight:700">Read Docs</a>
+              </div>
+              <code id="nextify-command" style="display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff">npx create-nextify@latest my-app</code>
+            </main>
+          \`;
+          const copyButton = document.getElementById('nextify-get-started');
+          const commandBox = document.getElementById('nextify-command');
+          copyButton?.addEventListener('click', async () => {
+            const command = 'npx create-nextify@latest my-app';
+            try {
+              await navigator.clipboard.writeText(command);
+              copyButton.textContent = 'Comando copiado ✓';
+              setTimeout(() => { copyButton.textContent = 'Get Started →'; }, 1800);
+            } catch {
+              window.alert('Copie manualmente: ' + command);
+            }
+          });
+          commandBox?.addEventListener('click', async () => {
+            const command = 'npx create-nextify@latest my-app';
+            try {
+              await navigator.clipboard.writeText(command);
+            } catch {}
+          });
+
               <p>Exemplo rápido: adicione também <code>pages/api/health.ts</code> para validar rotas de API.</p>
             </main>
           \`;
+
           return;
         }
 

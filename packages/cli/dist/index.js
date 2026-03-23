@@ -33,6 +33,58 @@ function createProject(target = 'nextify-app') {
             typescript: '^5.0.0'
         }
     }, null, 2));
+
+    writeFileSync(join(root, 'pages', 'index.tsx'), `import { useState } from 'react';
+
+const docsUrl = 'https://github.com/RicardoOliver/Nextify.js#readme';
+const command = 'npx create-nextify@latest my-app';
+
+const features = [
+  { title: 'Vite-Powered HMR', description: 'Atualizações instantâneas em desenvolvimento.' },
+  { title: 'File-based Routing', description: 'Rotas automáticas via estrutura de arquivos.' },
+  { title: 'API Routes', description: 'Endpoints em /pages/api com Web APIs.' },
+];
+
+export default function Home() {
+  const [copied, setCopied] = useState(false);
+
+  async function onGetStarted() {
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.alert('Copie manualmente: ' + command);
+    }
+  }
+
+  return (
+    <main style={{ minHeight: '100vh', padding: '40px 20px', background: '#020617', color: '#e2e8f0', fontFamily: 'Inter, sans-serif' }}>
+      <section style={{ width: 'min(1100px, 100%)', margin: '0 auto' }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(2rem, 6vw, 4rem)' }}>The modern React framework</h1>
+        <p style={{ color: '#94a3b8', lineHeight: 1.6 }}>
+          Build full-stack React applications com file-based routing e API routes.
+        </p>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '20px' }}>
+          <button type="button" onClick={onGetStarted} style={{ border: 'none', borderRadius: '10px', padding: '12px 18px', fontWeight: 800, background: '#60a5fa', cursor: 'pointer' }}>
+            {copied ? 'Comando copiado ✓' : 'Get Started →'}
+          </button>
+          <a href={docsUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid #334155', borderRadius: '10px', padding: '12px 18px', color: '#e2e8f0', textDecoration: 'none', fontWeight: 700 }}>
+            Read Docs
+          </a>
+        </div>
+        <code style={{ display: 'inline-block', marginTop: '16px', background: '#0f172a', borderRadius: '10px', padding: '10px 14px' }}>
+          $ {command}
+        </code>
+        <section style={{ display: 'grid', gap: '14px', marginTop: '26px', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))' }}>
+          {features.map((feature) => (
+            <article key={feature.title} style={{ background: '#0b1220', border: '1px solid #1e293b', borderRadius: '14px', padding: '16px' }}>
+              <h3 style={{ margin: 0 }}>{feature.title}</h3>
+              <p style={{ margin: '8px 0 0', color: '#94a3b8' }}>{feature.description}</p>
+            </article>
+          ))}
+        </section>
+
     writeFileSync(join(root, 'pages', 'index.tsx'), `const stats = [
   { value: '99,99%', label: 'Disponibilidade alvo' },
   { value: '< 120ms', label: 'Latência P95' },
@@ -62,6 +114,7 @@ export default function Home() {
             <span style={{ color: '#475569' }}>{item.label}</span>
           </article>
         ))}
+
       </section>
     </main>
   );

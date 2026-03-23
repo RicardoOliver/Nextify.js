@@ -8,7 +8,7 @@
   },
   "methodology": {
     "environment": {
-      "node": "v22.21.1",
+      "node": "v24.14.0",
       "os": "linux",
       "arch": "x64"
     },

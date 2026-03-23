@@ -49,6 +49,7 @@ function getPageFiles() {
 
 function buildHtmlShell(routePath) {
   const fileHint = routePath === '/' ? '/pages/index' : `/pages${routePath}`;
+  const currentRoute = JSON.stringify(routePath);
   const candidates = JSON.stringify([
     `${fileHint}.tsx`, `${fileHint}.jsx`, `${fileHint}.ts`, `${fileHint}.js`,
   ]);
@@ -59,6 +60,53 @@ function buildHtmlShell(routePath) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nextify.js</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background:
+          radial-gradient(circle at 0% 0%, #e0e7ff 0%, #f8fafc 45%, #ffffff 100%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #0f172a;
+      }
+
+      #root {
+        min-height: 100vh;
+        padding: clamp(20px, 4vw, 40px);
+      }
+
+      body main {
+        width: min(1100px, 100%);
+        margin: 0 auto;
+        padding: clamp(24px, 4vw, 48px);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: 0 24px 80px -45px rgba(15, 23, 42, 0.5);
+      }
+
+      body h1 {
+        margin: 0;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+
+      body p {
+        margin: 14px 0 0;
+        color: #334155;
+        max-width: 68ch;
+        line-height: 1.6;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -67,6 +115,7 @@ function buildHtmlShell(routePath) {
       import { createRoot } from 'react-dom/client';
 
       const candidates = ${candidates};
+      const currentRoute = ${currentRoute};
 
       async function loadPage() {
         let mod;
@@ -78,6 +127,40 @@ function buildHtmlShell(routePath) {
         }
 
         const root = document.getElementById('root');
+
+        if (!mod?.default && currentRoute === '/') {
+          root.innerHTML = \`
+            <main>
+              <h1>Bem-vindo ao Nextify.js 🚀</h1>
+              <p>Seu projeto está no ar. Crie <code>pages/index.tsx</code> para personalizar esta tela inicial.</p>
+              <p>Comece agora com o comando abaixo e acesse a documentação completa.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+                <button id="nextify-get-started" type="button" style="border:none;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#2563eb);padding:10px 16px;font-weight:700;cursor:pointer">Get Started →</button>
+                <a href="https://github.com/RicardoOliver/Nextify.js#readme" target="_blank" rel="noreferrer" style="border:1px solid #94a3b84a;border-radius:10px;padding:10px 16px;color:#0f172a;text-decoration:none;font-weight:700">Read Docs</a>
+              </div>
+              <code id="nextify-command" style="display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;border:1px solid #cbd5e1;background:#fff">npx create-nextify@latest my-app</code>
+            </main>
+          \`;
+          const copyButton = document.getElementById('nextify-get-started');
+          const commandBox = document.getElementById('nextify-command');
+          copyButton?.addEventListener('click', async () => {
+            const command = 'npx create-nextify@latest my-app';
+            try {
+              await navigator.clipboard.writeText(command);
+              copyButton.textContent = 'Comando copiado ✓';
+              setTimeout(() => { copyButton.textContent = 'Get Started →'; }, 1800);
+            } catch {
+              window.alert('Copie manualmente: ' + command);
+            }
+          });
+          commandBox?.addEventListener('click', async () => {
+            const command = 'npx create-nextify@latest my-app';
+            try {
+              await navigator.clipboard.writeText(command);
+            } catch {}
+          });
+          return;
+        }
 
         if (!mod?.default) {
           root.innerHTML = '<div style="font-family:monospace;padding:2rem;color:#e53e3e"><h2>404 — Página não encontrada</h2></div>';
@@ -198,7 +281,7 @@ export async function startDevServer(options = {}) {
         buildHtmlShell(pathname)
       );
 
-      const found = manifest.some(
+      const found = pathname === '/' || manifest.some(
         (r) => r.kind === 'page' && r.routePath === pathname
       );
 

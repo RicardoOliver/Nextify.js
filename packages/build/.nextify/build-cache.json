@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-03-23T00:52:33.593Z",
+  "modules": {
+    "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\src\\build.js": {
+      "graphHash": "cf26c63329423b478dc1a5e9654cb4a29fdba006",
+      "outputFilePath": "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\dist\\build.js",
+      "sourceMapFilePath": "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\dist\\build.js.map",
+      "updatedAt": "2026-03-23T00:52:33.600Z",
+      "rscDirective": null
+    },
+    "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\src\\compiler.js": {
+      "graphHash": "a84b802c67c9dfaf6818d9f6e51210697ddcf36d",
+      "outputFilePath": "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\dist\\compiler.js",
+      "sourceMapFilePath": "C:\\Users\\Ricardo\\Nextify.js\\packages\\build\\dist\\compiler.js.map",
+      "updatedAt": "2026-03-23T00:52:33.603Z",
+      "rscDirective": null
+    }
+  },
+  "buildConfig": {
+    "parallelism": 4
+  }
+}

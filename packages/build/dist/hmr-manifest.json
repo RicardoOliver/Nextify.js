@@ -1,0 +1,5 @@
+{
+  "targetLatencyMs": 100,
+  "estimatedLatencyMs": 120,
+  "cacheHits": 0
+}

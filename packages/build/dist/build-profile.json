@@ -1,0 +1,18 @@
+[
+  {
+    "module": "build.js",
+    "status": "rebuilt",
+    "dependencies": [
+      "compiler.js"
+    ],
+    "rscDirective": null,
+    "durationMs": 4.07
+  },
+  {
+    "module": "compiler.js",
+    "status": "rebuilt",
+    "dependencies": [],
+    "rscDirective": null,
+    "durationMs": 3.31
+  }
+]

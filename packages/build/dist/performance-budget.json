@@ -3,8 +3,8 @@
     "maxSingleAssetKb": 170,
     "maxTotalJsKb": 350
   },
-  "totalKb": 0,
-  "largestAssetKb": 0,
+  "totalKb": 11.33,
+  "largestAssetKb": 10.26,
   "status": "pass",
   "violations": []
 }

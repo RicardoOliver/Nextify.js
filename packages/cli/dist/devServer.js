@@ -128,6 +128,7 @@ function buildHtmlShell(routePath) {
             <main>
               <h1>Bem-vindo ao Nextify.js 🚀</h1>
               <p>Seu projeto está no ar. Crie <code>pages/index.tsx</code> para personalizar esta tela inicial.</p>
+
               <p>Comece agora com o comando abaixo e acesse a documentação completa.</p>
               <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
                 <button id="nextify-get-started" type="button" style="border:none;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#2563eb);padding:10px 16px;font-weight:700;cursor:pointer">Get Started →</button>
@@ -154,6 +155,11 @@ function buildHtmlShell(routePath) {
               await navigator.clipboard.writeText(command);
             } catch {}
           });
+
+              <p>Exemplo rápido: adicione também <code>pages/api/health.ts</code> para validar rotas de API.</p>
+            </main>
+          \`;
+
           return;
         }
 

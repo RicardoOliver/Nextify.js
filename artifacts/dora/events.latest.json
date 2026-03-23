@@ -1,58 +1,57 @@
 {
-  "generatedAt": "2026-03-22T00:00:00.000Z",
   "period": {
     "from": "2026-03-01T00:00:00.000Z",
-    "to": "2026-03-22T00:00:00.000Z"
+    "to": "2026-03-22T23:59:59.999Z"
   },
   "deployments": [
     {
-      "id": "deploy-001",
-      "commitCreatedAt": "2026-03-01T09:15:00.000Z",
-      "deployedAt": "2026-03-01T21:10:00.000Z",
-      "status": "success"
+      "id": "dep-001",
+      "status": "success",
+      "commitCreatedAt": "2026-03-02T08:00:00.000Z",
+      "deployedAt": "2026-03-02T18:00:00.000Z"
     },
     {
-      "id": "deploy-002",
-      "commitCreatedAt": "2026-03-03T13:00:00.000Z",
-      "deployedAt": "2026-03-04T08:00:00.000Z",
-      "status": "success"
+      "id": "dep-002",
+      "status": "success",
+      "commitCreatedAt": "2026-03-05T09:00:00.000Z",
+      "deployedAt": "2026-03-05T21:00:00.000Z"
     },
     {
-      "id": "deploy-003",
-      "commitCreatedAt": "2026-03-05T10:45:00.000Z",
-      "deployedAt": "2026-03-05T18:45:00.000Z",
-      "status": "success"
+      "id": "dep-003",
+      "status": "success",
+      "commitCreatedAt": "2026-03-07T06:00:00.000Z",
+      "deployedAt": "2026-03-07T20:00:00.000Z"
     },
     {
-      "id": "deploy-004",
-      "commitCreatedAt": "2026-03-08T12:00:00.000Z",
-      "failedAt": "2026-03-08T16:00:00.000Z",
-      "recoveredAt": "2026-03-08T16:42:00.000Z",
-      "status": "failed"
+      "id": "dep-004",
+      "status": "success",
+      "commitCreatedAt": "2026-03-10T07:00:00.000Z",
+      "deployedAt": "2026-03-10T21:00:00.000Z"
     },
     {
-      "id": "deploy-005",
-      "commitCreatedAt": "2026-03-11T08:30:00.000Z",
-      "deployedAt": "2026-03-11T22:30:00.000Z",
-      "status": "success"
+      "id": "dep-005",
+      "status": "success",
+      "commitCreatedAt": "2026-03-12T04:00:00.000Z",
+      "deployedAt": "2026-03-12T20:00:00.000Z"
     },
     {
-      "id": "deploy-006",
-      "commitCreatedAt": "2026-03-14T14:20:00.000Z",
-      "deployedAt": "2026-03-15T07:20:00.000Z",
-      "status": "success"
+      "id": "dep-006",
+      "status": "success",
+      "commitCreatedAt": "2026-03-15T03:00:00.000Z",
+      "deployedAt": "2026-03-15T21:00:00.000Z"
     },
     {
-      "id": "deploy-007",
-      "commitCreatedAt": "2026-03-18T09:00:00.000Z",
-      "deployedAt": "2026-03-18T20:30:00.000Z",
-      "status": "success"
+      "id": "dep-007",
+      "status": "success",
+      "commitCreatedAt": "2026-03-18T01:00:00.000Z",
+      "deployedAt": "2026-03-18T21:00:00.000Z"
     },
     {
-      "id": "deploy-008",
-      "commitCreatedAt": "2026-03-20T11:00:00.000Z",
-      "deployedAt": "2026-03-21T02:00:00.000Z",
-      "status": "success"
+      "id": "dep-008",
+      "status": "failed",
+      "commitCreatedAt": "2026-03-20T09:00:00.000Z",
+      "failedAt": "2026-03-20T12:00:00.000Z",
+      "recoveredAt": "2026-03-20T12:42:00.000Z"
     }
   ]
 }

@@ -1,0 +1,5 @@
+{
+  "maxLeadTimeHoursMedian": 24,
+  "maxChangeFailRatePct": 15,
+  "maxMttrHoursAverage": 1
+}

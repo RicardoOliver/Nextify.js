@@ -21,7 +21,7 @@
     "url": "https://github.com/sponsors/RicardoOliver"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=24.14.0"
   },
   "packageManager": "npm@9",
   "keywords": [
@@ -75,10 +75,10 @@
     "bootstrap:dev": "bash scripts/bootstrap-dev.sh"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^9.39.1",
     "prettier": "^3.7.0",
     "typescript": "^5.9.3",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.0"
   }
 }

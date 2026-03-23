@@ -51,7 +51,43 @@ function createProject(target = 'nextify-app') {
     )
   );
 
-  writeFileSync(join(root, 'pages', 'index.tsx'), `export default function Home() { return <main>Nextify</main>; }`);
+  writeFileSync(
+    join(root, 'pages', 'index.tsx'),
+    `const stats = [
+  { value: '99,99%', label: 'Disponibilidade alvo' },
+  { value: '< 120ms', label: 'Latência P95' },
+  { value: '24/7', label: 'Monitoramento ativo' },
+];
+
+export default function Home() {
+  return (
+    <main>
+      <h1>Bem-vindo ao Nextify.js 🚀</h1>
+      <p>
+        Crie produtos com padrão enterprise, performance consistente e experiência de
+        desenvolvimento moderna.
+      </p>
+      <section style={{ display: 'grid', gap: '12px', marginTop: '24px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+        {stats.map((item) => (
+          <article
+            key={item.label}
+            style={{
+              border: '1px solid #e2e8f0',
+              borderRadius: '14px',
+              padding: '16px',
+              background: '#ffffff',
+            }}
+          >
+            <strong style={{ display: 'block', fontSize: '1.2rem' }}>{item.value}</strong>
+            <span style={{ color: '#475569' }}>{item.label}</span>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+`
+  );
 
   writeFileSync(
     join(root, 'pages', 'api', 'health.ts'),

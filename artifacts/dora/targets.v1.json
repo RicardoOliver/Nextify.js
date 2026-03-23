@@ -1,6 +1,0 @@
-{
-  "version": "v1",
-  "maxLeadTimeHoursMedian": 48,
-  "maxChangeFailRatePct": 15,
-  "maxMttrHoursAverage": 2
-}

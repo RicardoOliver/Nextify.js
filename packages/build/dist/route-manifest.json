@@ -1,8 +1,0 @@
-{
-  "generatedAt": "2026-03-23T01:15:54.147Z",
-  "note": "Manifesto de rotas gerado pelo build system do Nextify.",
-  "modules": [
-    "build.js",
-    "compiler.js"
-  ]
-}

@@ -51,6 +51,7 @@
     "typecheck": "npm run --workspaces --if-present typecheck",
     "test": "npm run --workspaces --if-present test",
     "lint": "eslint . --ext .js,.mjs,.cjs --max-warnings=0",
+    "check:cli": "npm run lint && npm --workspace create-nextify run typecheck",
     "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
     "format": "prettier --write package.json .prettierrc.json .github/settings.yml .github/workflows/ci.yml eslint.config.mjs scripts/validate-commits.mjs",
     "format:check": "prettier --check package.json .prettierrc.json .github/settings.yml .github/workflows/ci.yml eslint.config.mjs scripts/validate-commits.mjs",

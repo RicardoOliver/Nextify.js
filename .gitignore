@@ -2,3 +2,5 @@ node_modules/
 artifacts/dora/*
 !artifacts/dora/events.latest.json
 !artifacts/dora/targets.v1.json
+dist/
+.nextify/

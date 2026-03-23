@@ -45,6 +45,7 @@ function getPageFiles() {
 }
 function buildHtmlShell(routePath) {
     const fileHint = routePath === '/' ? '/pages/index' : `/pages${routePath}`;
+    const currentRoute = JSON.stringify(routePath);
     const candidates = JSON.stringify([
         `${fileHint}.tsx`, `${fileHint}.jsx`, `${fileHint}.ts`, `${fileHint}.js`,
     ]);
@@ -109,6 +110,7 @@ function buildHtmlShell(routePath) {
       import { createRoot } from 'react-dom/client';
 
       const candidates = ${candidates};
+      const currentRoute = ${currentRoute};
 
       async function loadPage() {
         let mod;
@@ -120,6 +122,17 @@ function buildHtmlShell(routePath) {
         }
 
         const root = document.getElementById('root');
+
+        if (!mod?.default && currentRoute === '/') {
+          root.innerHTML = \`
+            <main>
+              <h1>Bem-vindo ao Nextify.js 🚀</h1>
+              <p>Seu projeto está no ar. Crie <code>pages/index.tsx</code> para personalizar esta tela inicial.</p>
+              <p>Exemplo rápido: adicione também <code>pages/api/health.ts</code> para validar rotas de API.</p>
+            </main>
+          \`;
+          return;
+        }
 
         if (!mod?.default) {
           root.innerHTML = '<div style="font-family:monospace;padding:2rem;color:#e53e3e"><h2>404 — Página não encontrada</h2></div>';
@@ -211,7 +224,7 @@ export async function startDevServer(options = {}) {
         // Pages
         try {
             const html = await vite.transformIndexHtml(req.url ?? '/', buildHtmlShell(pathname));
-            const found = manifest.some((r) => r.kind === 'page' && r.routePath === pathname);
+            const found = pathname === '/' || manifest.some((r) => r.kind === 'page' && r.routePath === pathname);
             res.statusCode = found ? 200 : 404;
             res.setHeader('content-type', 'text/html; charset=utf-8');
             res.end(html);

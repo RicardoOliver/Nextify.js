@@ -1,18 +1,18 @@
 [
   {
     "module": "build.js",
-    "status": "rebuilt",
+    "status": "cache-hit",
     "dependencies": [
       "compiler.js"
     ],
     "rscDirective": null,
-    "durationMs": 4.07
+    "durationMs": 1.83
   },
   {
     "module": "compiler.js",
-    "status": "rebuilt",
+    "status": "cache-hit",
     "dependencies": [],
     "rscDirective": null,
-    "durationMs": 3.31
+    "durationMs": 1.33
   }
 ]

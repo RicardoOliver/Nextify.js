@@ -4,6 +4,7 @@ import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 // Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
 import { migrateNextProject } from './migrate.js';
+import { initFrameworkMigration, runFrameworkCheck } from './frameworkMigration.js';
 function createProject(target = 'nextify-app') {
     const root = join(process.cwd(), target);
     if (existsSync(root)) {
@@ -33,7 +34,6 @@ function createProject(target = 'nextify-app') {
             typescript: '^5.0.0'
         }
     }, null, 2));
-
     writeFileSync(join(root, 'pages', 'index.tsx'), `import { useState } from 'react';
 
 const docsUrl = 'https://github.com/RicardoOliver/Nextify.js#readme';
@@ -84,37 +84,6 @@ export default function Home() {
             </article>
           ))}
         </section>
-
-    writeFileSync(join(root, 'pages', 'index.tsx'), `const stats = [
-  { value: '99,99%', label: 'Disponibilidade alvo' },
-  { value: '< 120ms', label: 'Latência P95' },
-  { value: '24/7', label: 'Monitoramento ativo' },
-];
-
-export default function Home() {
-  return (
-    <main>
-      <h1>Bem-vindo ao Nextify.js 🚀</h1>
-      <p>
-        Crie produtos com padrão enterprise, performance consistente e experiência de
-        desenvolvimento moderna.
-      </p>
-      <section style={{ display: 'grid', gap: '12px', marginTop: '24px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
-        {stats.map((item) => (
-          <article
-            key={item.label}
-            style={{
-              border: '1px solid #e2e8f0',
-              borderRadius: '14px',
-              padding: '16px',
-              background: '#ffffff',
-            }}
-          >
-            <strong style={{ display: 'block', fontSize: '1.2rem' }}>{item.value}</strong>
-            <span style={{ color: '#475569' }}>{item.label}</span>
-          </article>
-        ))}
-
       </section>
     </main>
   );
@@ -160,6 +129,8 @@ ou
   nextify dev [porta]
   nextify build
   nextify start [porta]
+  nextify check
+  nextify init
   nextify migrate
 `);
 }
@@ -183,6 +154,12 @@ switch (command) {
         break;
     case 'start':
         runProdServer(port);
+        break;
+    case 'check':
+        runFrameworkCheck(process.cwd());
+        break;
+    case 'init':
+        initFrameworkMigration(process.cwd());
         break;
     case 'migrate':
         migrateNextProject(process.cwd());

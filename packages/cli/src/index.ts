@@ -9,6 +9,7 @@ import {
 import { join } from 'node:path';
 // Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
 import { migrateNextProject } from './migrate.js';
+import { initFrameworkMigration, runFrameworkCheck } from './frameworkMigration.js';
 
 
 function createProject(target = 'nextify-app') {
@@ -161,6 +162,8 @@ ou
   nextify dev [porta]
   nextify build
   nextify start [porta]
+  nextify check
+  nextify init
   nextify migrate
 `);
 }
@@ -188,6 +191,12 @@ switch (command) {
     break;
   case 'start':
     runProdServer(port);
+    break;
+  case 'check':
+    runFrameworkCheck(process.cwd());
+    break;
+  case 'init':
+    initFrameworkMigration(process.cwd());
     break;
   case 'migrate':
     migrateNextProject(process.cwd());

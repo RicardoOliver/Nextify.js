@@ -33,6 +33,14 @@ function compareVersions(a, b) {
   return 0;
 }
 
+
+const skipCheck = process.env.NEXTIFY_SKIP_NODE_VERSION_CHECK === '1';
+
+if (skipCheck) {
+  console.warn('[Nextify] Verificação de versão do Node ignorada (NEXTIFY_SKIP_NODE_VERSION_CHECK=1).');
+  process.exit(0);
+}
+
 const currentNodeVersion = process.versions.node;
 const isCompatible = compareVersions(parseVersion(currentNodeVersion), parseVersion(MIN_NODE_VERSION)) >= 0;
 

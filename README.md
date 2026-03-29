@@ -49,7 +49,7 @@ npx create-nextify@latest my-app
 - ✅ Runtime de dados com `loader/action` e invalidação por tags.
 - ✅ Rendering com islands e shell de hidratação.
 - ✅ Build com relatório de performance budget.
-- ✅ Adapters dedicados para AWS Lambda, Cloudflare Workers e Vercel Edge.
+- ✅ Adapters dedicados para AWS Lambda e Cloudflare Workers.
 
 ### Atualizações implementadas em **29 de março de 2026**
 
@@ -96,19 +96,37 @@ npx create-nextify@latest my-app
 
 ## Quick Start
 
-### Create a New Project
+### Criar um novo projeto
+
+Você pode iniciar um app Nextify.js com diferentes gerenciadores de pacote:
 
 ```bash
-# Create a new Nextify.js application
+# npm (npx)
 npx create-nextify@latest my-app
 
-# Navigate to project directory
+# npm (create)
+npm create nextify@latest my-app
+
+# pnpm
+pnpm create nextify@latest my-app
+
+# yarn
+yarn create nextify my-app
+
+# bun
+bunx create-nextify@latest my-app
+```
+
+### Iniciar ambiente local
+
+```bash
+# Acesse a pasta do projeto
 cd my-app
 
-# Install dependencies
+# Instale as dependências
 npm install
 
-# Start development server
+# Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
@@ -171,7 +189,7 @@ nextify/
 │   └── dev-server/    # Development runtime with HMR
 │   ├── adapter-aws-lambda/
 │   ├── adapter-cloudflare/
-│   └── adapter-vercel-edge/
+│   └── adapter-experimental/
 ├── examples/          # Reference implementations
 └── docs/              # Technical documentation
 ```
@@ -273,7 +291,6 @@ export default defineConfig({
 | [`@nextify/dev-server`](./packages/dev-server) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Development server |
 | [`@nextify/adapter-aws-lambda`](./packages/adapter-aws-lambda) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para AWS Lambda |
 | [`@nextify/adapter-cloudflare-workers`](./packages/adapter-cloudflare) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para Cloudflare Workers |
-| [`@nextify/adapter-vercel-edge`](./packages/adapter-vercel-edge) | ![npm](https://img.shields.io/badge/0.2.4-blue) | Adapter para Vercel Edge Runtime |
 
 <br />
 
@@ -325,22 +342,6 @@ npm run dev
 | `npm run lint` | Lint codebase |
 | `npm run typecheck` | TypeScript type checking |
 | `npm run validate` | Full validation (lint + typecheck + test) |
-
-<br />
-
-## Disable Vercel Bot Comments on Pull Requests
-
-If Vercel comments are still appearing in your pull requests (for example, `vercel[bot]` posting preview deploy failures), that signal comes from **GitHub/Vercel integration settings**, not from references inside this repository.
-
-Use this checklist to fully disable it:
-
-1. In **Vercel Dashboard → Project → Settings → Git**, disconnect the GitHub repository from the project.
-2. In **GitHub → Repository → Settings → Integrations / Installed GitHub Apps**, remove or restrict the **Vercel** app for this repository.
-3. In **GitHub → Repository → Settings → Webhooks**, remove any Vercel webhook if present.
-4. In **Repository → Settings → Branches / Rulesets**, remove required checks related to Vercel previews if configured.
-
-After that, open a new commit/PR to confirm the `vercel[bot]` comment no longer appears.
-
 
 <br />
 

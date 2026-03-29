@@ -10,13 +10,36 @@ export type RateLimitOptions = {
   windowMs: number;
   keyGenerator?: (req: Request) => string;
   bypass?: (req: Request) => boolean;
+  maxEntries?: number;
 };
+
+function sanitizeKey(value: string): string {
+  return value.trim().slice(0, 120) || 'anonymous';
+}
 
 function defaultKeyGenerator(req: Request): string {
   const forwarded = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
   const realIp = req.headers.get('x-real-ip')?.trim();
 
-  return forwarded || realIp || 'anonymous';
+  return sanitizeKey(forwarded || realIp || 'anonymous');
+}
+
+function pruneMap(windows: Map<string, RateLimitWindow>, now: number, maxEntries: number) {
+  for (const [key, window] of windows) {
+    if (window.resetAt <= now) {
+      windows.delete(key);
+    }
+  }
+
+  if (windows.size <= maxEntries) {
+    return;
+  }
+
+  const byResetAsc = Array.from(windows.entries()).sort((a, b) => a[1].resetAt - b[1].resetAt);
+  const removeCount = windows.size - maxEntries;
+  for (let i = 0; i < removeCount; i += 1) {
+    windows.delete(byResetAsc[i][0]);
+  }
 }
 
 export function createRateLimit(options: RateLimitOptions): NextifyMiddleware {
@@ -29,6 +52,7 @@ export function createRateLimit(options: RateLimitOptions): NextifyMiddleware {
   }
 
   const keyGenerator = options.keyGenerator ?? defaultKeyGenerator;
+  const maxEntries = options.maxEntries ?? 50000;
   const windows = new Map<string, RateLimitWindow>();
 
   return async (req, next) => {
@@ -37,7 +61,9 @@ export function createRateLimit(options: RateLimitOptions): NextifyMiddleware {
     }
 
     const now = Date.now();
-    const key = keyGenerator(req);
+    pruneMap(windows, now, maxEntries);
+
+    const key = sanitizeKey(keyGenerator(req));
     const current = windows.get(key);
 
     if (!current || current.resetAt <= now) {

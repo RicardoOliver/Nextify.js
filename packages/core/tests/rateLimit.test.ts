@@ -20,4 +20,25 @@ describe('rateLimit', () => {
     expect(third.headers.get('Retry-After')).not.toBeNull();
     expect(third.headers.get('X-RateLimit-Limit')).toBe('2');
   });
+
+  it('limita crescimento de memória com maxEntries', async () => {
+    const middleware = createRateLimit({
+      maxRequests: 5,
+      windowMs: 60_000,
+      maxEntries: 2,
+      keyGenerator: (req) => req.headers.get('x-real-ip') ?? 'anonymous'
+    });
+
+    await middleware(new Request('http://localhost/a', { headers: { 'x-real-ip': '10.0.0.1' } }), async () => new Response('ok'));
+    await middleware(new Request('http://localhost/a', { headers: { 'x-real-ip': '10.0.0.2' } }), async () => new Response('ok'));
+    await middleware(new Request('http://localhost/a', { headers: { 'x-real-ip': '10.0.0.3' } }), async () => new Response('ok'));
+
+    const replayFirst = await middleware(
+      new Request('http://localhost/a', { headers: { 'x-real-ip': '10.0.0.1' } }),
+      async () => new Response('ok')
+    );
+
+    expect(replayFirst.status).toBe(200);
+    expect(replayFirst.headers.get('X-RateLimit-Remaining')).toBe('4');
+  });
 });

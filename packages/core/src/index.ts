@@ -42,3 +42,5 @@ export * from './observability/distributedTracing.js';
 export * from './middleware/enterpriseSecurity.js';
 
 export * from './dx/devtools.js';
+// Next compatibility shims
+export * from './compat/nextApiShims.js';

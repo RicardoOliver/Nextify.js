@@ -100,4 +100,54 @@ describe('CLI smoke', () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('check gera diagnóstico de compatibilidade para projeto Next.js', () => {
+    const root = mkdtempSync(join(tmpdir(), 'nextify-cli-check-'));
+
+    try {
+      writeFileSync(
+        join(root, 'package.json'),
+        JSON.stringify({ name: 'legacy-next', dependencies: { next: '^15.0.0' } }, null, 2),
+        'utf8'
+      );
+      mkdirSync(join(root, 'pages'), { recursive: true });
+
+      const result = runCli(['check'], root);
+      const reportPath = join(root, 'artifacts', 'upgrades', 'framework-check.latest.json');
+
+      expect(result.status).toBe(0);
+      expect(existsSync(reportPath)).toBe(true);
+
+      const report = JSON.parse(readFileSync(reportPath, 'utf8'));
+      expect(report.framework).toBe('nextjs');
+      expect(report.findings.some((entry: string) => entry.includes('pages/'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('init gera plano de migração assistida', () => {
+    const root = mkdtempSync(join(tmpdir(), 'nextify-cli-init-'));
+
+    try {
+      writeFileSync(
+        join(root, 'package.json'),
+        JSON.stringify({ name: 'legacy-next', dependencies: { next: '^15.0.0' } }, null, 2),
+        'utf8'
+      );
+
+      const result = runCli(['init'], root);
+      const planPath = join(root, 'nextify.framework-migration.json');
+
+      expect(result.status).toBe(0);
+      expect(existsSync(planPath)).toBe(true);
+
+      const plan = JSON.parse(readFileSync(planPath, 'utf8'));
+      expect(plan.sourceFramework).toBe('nextjs');
+      expect(plan.targetFramework).toBe('nextify');
+      expect(plan.steps.some((entry: { id: string }) => entry.id === 'check')).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });

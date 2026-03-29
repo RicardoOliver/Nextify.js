@@ -16,6 +16,17 @@
 - Benchmarks transparentes (mensal).
 - Estudos de caso de apps reais (bimestral).
 
+## Narrativa de benchmark contínuo e público
+
+O ViNext usa benchmark como argumento central de posicionamento. O Nextify já possui metodologia aberta e scripts de benchmark comparativo, o que cria um ativo pronto para "produto" em formato de dashboard público e relatórios mais visíveis por release.
+
+### Transformar benchmark em ativo de crescimento
+
+- Publicar um dashboard público versionado com p50/p95 por cenário.
+- Anexar relatório comparativo em toda release candidate e release final.
+- Destacar tendência (não só foto do mês) para evidenciar consistência de performance.
+- Converter dados em conteúdo recorrente (post técnico, visual curto e thread).
+
 ## Growth loops
 
 - Cada release gera: changelog + post técnico + demo curta.

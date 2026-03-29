@@ -73,6 +73,7 @@
     "upgrade:assist": "node scripts/run-upgrade-assistant.mjs",
     "benchmark:comparative": "node scripts/publish-comparative-benchmark.mjs",
     "metrics:dora": "node scripts/generate-dora-metrics.mjs",
+    "metrics:ai-quality": "node scripts/generate-ai-quality-metrics.mjs",
     "bootstrap:dev": "bash scripts/bootstrap-dev.sh"
   },
   "devDependencies": {

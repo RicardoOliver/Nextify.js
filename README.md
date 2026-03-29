@@ -43,6 +43,29 @@
 npx create-nextify@latest my-app
 ```
 
+## Como construímos com IA e qualidade
+
+No Nextify, IA é **acelerador de produtividade**, não substituto de engenharia.
+
+- IA pode escrever parte relevante do código.
+- Cada linha ainda passa por quality gates automatizados e revisão humana.
+- A narrativa pública é sustentada por evidências versionadas no próprio repositório.
+
+### Evidências objetivas (fonte versionada)
+
+- **Métricas IA + qualidade**: [`artifacts/health/ai-quality-metrics.md`](./artifacts/health/ai-quality-metrics.md)
+- **Painel técnico consolidado**: [`artifacts/health/engineering-health-panel.md`](./artifacts/health/engineering-health-panel.md)
+- **Gates por PR no CI**: lint, typecheck, testes, benchmark/regressão, auditorias e provenance/SBOM em [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
+
+> Princípio de rastreabilidade: sempre que a mensagem pública muda, a fonte de dados muda no mesmo PR.
+
+Para atualizar os números antes de abrir PR:
+
+```bash
+npm run engineering-health:panel
+npm run metrics:ai-quality
+```
+
 ### Estado atual do projeto (v0.2.4)
 
 - ✅ Monorepo com pacotes versionados em `0.2.4`.

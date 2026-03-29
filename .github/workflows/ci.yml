@@ -66,6 +66,9 @@ jobs:
       - name: Generate engineering health panel
         run: npm run engineering-health:panel
 
+      - name: Generate AI quality narrative metrics
+        run: npm run metrics:ai-quality
+
       - name: Upload engineering health artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -73,6 +76,8 @@ jobs:
           path: |
             artifacts/health/engineering-health-panel.json
             artifacts/health/engineering-health-panel.md
+            artifacts/health/ai-quality-metrics.json
+            artifacts/health/ai-quality-metrics.md
             artifacts/observability/production-feedback-report.latest.json
             artifacts/dora/metrics.latest.json
             artifacts/dora/metrics.latest.md

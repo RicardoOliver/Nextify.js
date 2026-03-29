@@ -104,6 +104,16 @@ npm install
 npm run dev
 ```
 
+### One-command Deploy (Cloudflare Workers)
+
+Se seu projeto já usa o adapter Cloudflare, você pode preparar configuração + build + deploy com um único comando:
+
+```bash
+nextify deploy cloudflare
+```
+
+Esse comando cria `wrangler.toml` e `dist/_worker.js` automaticamente (quando ainda não existirem), roda o build e em seguida executa `wrangler deploy`.
+
 ### Project Structure
 
 ```

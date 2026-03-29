@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import http from 'node:http';
-import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 // Mantém a lógica de migração isolada para evitar conflitos recorrentes no entrypoint da CLI.
 import { migrateNextProject } from './migrate.js';
@@ -117,6 +118,62 @@ function runBuild() {
     writeFileSync(join(process.cwd(), 'dist', 'route-manifest.json'), JSON.stringify({ note: 'Manifesto de rotas gerado pelo build do Nextify', generatedAt: new Date().toISOString() }, null, 2));
     console.log('✔ Build concluído. Artefatos em dist/');
 }
+function ensureCloudflareDeploymentFiles() {
+    const root = process.cwd();
+    const cwdName = root.split('/').filter(Boolean).pop() ?? 'nextify-app';
+    const packageName = existsSync(join(root, 'package.json'))
+        ? (() => {
+            try {
+                const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+                return packageJson.name;
+            }
+            catch {
+                return undefined;
+            }
+        })()
+        : undefined;
+    const workerName = (packageName ?? cwdName).replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
+    const wranglerPath = join(root, 'wrangler.toml');
+    const workerEntrypointPath = join(root, 'dist', '_worker.js');
+    if (!existsSync(wranglerPath)) {
+        writeFileSync(wranglerPath, `name = "${workerName}"
+main = "dist/_worker.js"
+compatibility_date = "2025-01-01"
+`, 'utf8');
+        console.log('✔ wrangler.toml criado automaticamente.');
+    }
+    mkdirSync(join(root, 'dist'), { recursive: true });
+    if (!existsSync(workerEntrypointPath)) {
+        writeFileSync(workerEntrypointPath, `export default {
+  async fetch() {
+    const body = JSON.stringify({
+      ok: true,
+      runtime: 'cloudflare-workers',
+      framework: 'nextify'
+    });
+
+    return new Response(body, {
+      headers: { 'content-type': 'application/json; charset=utf-8' }
+    });
+  }
+};
+`, 'utf8');
+        console.log('✔ dist/_worker.js criado para deploy Cloudflare.');
+    }
+}
+function runCloudflareDeploy() {
+    ensureCloudflareDeploymentFiles();
+    runBuild();
+    const wranglerBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    const deploy = spawnSync(wranglerBin, ['wrangler', 'deploy'], {
+        cwd: process.cwd(),
+        stdio: 'inherit'
+    });
+    if (deploy.status !== 0) {
+        process.exit(deploy.status ?? 1);
+    }
+    console.log('🚀 Deploy Cloudflare concluído.');
+}
 function showHelp() {
     console.log(`
 Uso:
@@ -132,6 +189,7 @@ ou
   nextify check
   nextify init
   nextify migrate
+  nextify deploy cloudflare
 `);
 }
 const args = process.argv.slice(2);
@@ -163,6 +221,14 @@ switch (command) {
         break;
     case 'migrate':
         migrateNextProject(process.cwd());
+        break;
+    case 'deploy':
+        if (args[1] === 'cloudflare') {
+            runCloudflareDeploy();
+            break;
+        }
+        console.error('Erro: target de deploy não suportado. Use "nextify deploy cloudflare".');
+        process.exit(1);
         break;
     default:
         createProject(command);

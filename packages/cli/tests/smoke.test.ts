@@ -150,4 +150,46 @@ describe('CLI smoke', () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('deploy cloudflare cria config e chama wrangler deploy', () => {
+    const root = mkdtempSync(join(tmpdir(), 'nextify-cli-deploy-'));
+    const binDir = join(root, 'bin');
+    const npxPath = join(binDir, 'npx');
+    const markerPath = join(root, 'wrangler-invocation.txt');
+
+    try {
+      mkdirSync(binDir, { recursive: true });
+      writeFileSync(
+        join(root, 'package.json'),
+        JSON.stringify({ name: 'nextify-cloudflare-demo' }, null, 2),
+        'utf8'
+      );
+      writeFileSync(
+        npxPath,
+        `#!/usr/bin/env node
+import { writeFileSync } from 'node:fs';
+writeFileSync(${JSON.stringify(markerPath)}, process.argv.slice(2).join(' '), 'utf8');
+`,
+        'utf8'
+      );
+      spawnSync('chmod', ['+x', npxPath], { encoding: 'utf-8' });
+
+      const result = spawnSync(process.execPath, [cliEntry, 'deploy', 'cloudflare'], {
+        cwd: root,
+        encoding: 'utf-8',
+        env: {
+          ...process.env,
+          PATH: `${binDir}:${process.env.PATH ?? ''}`
+        }
+      });
+
+      expect(result.status).toBe(0);
+      expect(existsSync(join(root, 'wrangler.toml'))).toBe(true);
+      expect(existsSync(join(root, 'dist', '_worker.js'))).toBe(true);
+      expect(existsSync(markerPath)).toBe(true);
+      expect(readFileSync(markerPath, 'utf8')).toContain('wrangler deploy');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });

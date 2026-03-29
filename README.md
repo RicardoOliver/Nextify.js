@@ -51,6 +51,14 @@ npx create-nextify@latest my-app
 - ✅ Build com relatório de performance budget.
 - ✅ Adapters dedicados para AWS Lambda, Cloudflare Workers e Vercel Edge.
 
+### Atualizações implementadas em **29 de março de 2026**
+
+- ✅ **CLI: deploy Cloudflare em um comando** com `nextify deploy cloudflare`, incluindo bootstrap automático de `wrangler.toml` e `dist/_worker.js` quando ausentes.
+- ✅ **CLI: migração assistida** com comandos de pré-check de compatibilidade e inicialização de plano de migração (`nextify check` e `nextify init`).
+- ✅ **Core: camada progressiva de compatibilidade Next-style APIs** para facilitar adoção incremental.
+- ✅ **CI: workflow de revisão automática de PR com IA** para reforçar quality gates no repositório.
+- ✅ **Documentação estratégica expandida** para benchmark público contínuo e plano de reaproveitamento técnico do projeto Vinext.
+
 <br />
 
 ## Features

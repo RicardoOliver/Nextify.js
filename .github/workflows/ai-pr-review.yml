@@ -1,0 +1,157 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: ai-pr-review-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  ai-review:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate OpenAI key
+        id: validate-key
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::OPENAI_API_KEY não configurada. Workflow encerrado sem review IA."
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build AI review
+        if: steps.validate-key.outputs.has_key == 'true'
+        id: ai-review
+        uses: actions/github-script@v7
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.setFailed('Este workflow requer contexto de pull_request.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = pr.number;
+
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              { owner, repo, pull_number, per_page: 100 }
+            );
+
+            const reviewComments = await github.paginate(
+              github.rest.pulls.listReviewComments,
+              { owner, repo, pull_number, per_page: 100 }
+            );
+
+            const issueComments = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number: pull_number, per_page: 100 }
+            );
+
+            const trimmedFiles = files.slice(0, 40).map((file) => ({
+              filename: file.filename,
+              status: file.status,
+              additions: file.additions,
+              deletions: file.deletions,
+              changes: file.changes,
+              patch: file.patch ? file.patch.slice(0, 8000) : 'Sem patch disponível (arquivo binário ou muito grande).'
+            }));
+
+            const commentsForPrompt = {
+              review_comments: reviewComments.slice(-40).map((c) => ({
+                user: c.user?.login,
+                path: c.path,
+                body: c.body,
+                created_at: c.created_at
+              })),
+              issue_comments: issueComments.slice(-30).map((c) => ({
+                user: c.user?.login,
+                body: c.body,
+                created_at: c.created_at
+              }))
+            };
+
+            const prompt = [
+              'Você é um revisor técnico sênior.',
+              'Analise este PR e responda em português, markdown, com as seções exatas:',
+              '1) ## Resumo do diff',
+              '2) ## Melhorias sugeridas',
+              '3) ## Revisão dos comentários da PR',
+              '4) ## Checklist rápido antes do merge',
+              'Regras:',
+              '- Seja objetivo e acionável.',
+              '- Dê prioridade para bugs, segurança, performance, DX e testes.',
+              '- Em "Melhorias sugeridas", inclua no máximo 7 itens com severidade (alta/média/baixa).',
+              '- Em "Revisão dos comentários", identifique temas recorrentes, possíveis pendências e próximos passos.',
+              '- Se não houver problemas críticos, diga explicitamente que não encontrou bloqueadores.',
+              '',
+              `Título: ${pr.title}`,
+              `Autor: ${pr.user?.login}`,
+              `Descrição: ${pr.body || 'Sem descrição.'}`,
+              `Arquivos alterados: ${files.length}`,
+              '',
+              'Diff (amostra):',
+              JSON.stringify(trimmedFiles),
+              '',
+              'Comentários da discussão:',
+              JSON.stringify(commentsForPrompt)
+            ].join('\n');
+
+            const response = await fetch('https://api.openai.com/v1/responses', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                model: process.env.OPENAI_MODEL,
+                input: prompt,
+                max_output_tokens: 1500
+              })
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              core.setFailed(`Falha ao chamar OpenAI: ${response.status} ${errorText}`);
+              return;
+            }
+
+            const data = await response.json();
+            const outputText = data.output_text || 'Não foi possível gerar resposta da IA.';
+
+            const body = [
+              '## 🤖 AI PR Review',
+              '',
+              `Modelo: \`${process.env.OPENAI_MODEL}\``,
+              `Atualizado em: ${new Date().toISOString()}`,
+              '',
+              outputText,
+              '',
+              '> ℹ️ Revisão automatizada. Sempre valide com revisão humana antes do merge.'
+            ].join('\n');
+
+            core.setOutput('review_body', body);
+
+      - name: Publish sticky comment
+        if: steps.validate-key.outputs.has_key == 'true' && steps.ai-review.outputs.review_body != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: ai-pr-review
+          message: ${{ steps.ai-review.outputs.review_body }}

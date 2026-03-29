@@ -1,6 +1,16 @@
 #!/usr/bin/env node
 
-const MIN_NODE_VERSION = '20.19.0';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const packageJsonPath = path.resolve(__dirname, '../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+const engineConstraint = packageJson?.engines?.node ?? '';
+const minVersionMatch = engineConstraint.match(/>=\s*(\d+\.\d+\.\d+)/);
+const MIN_NODE_VERSION = minVersionMatch?.[1] ?? '24.14.0';
 
 function parseVersion(version) {
   return version

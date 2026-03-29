@@ -14,6 +14,8 @@ No seu repo já existe uma base de “upgrade assistido” (`upgrade:assist`) e 
 
 O vinext vende forte o “drop-in” com shims. No Nextify, seu roteamento já entende estruturas `app/` e `pages/`, o que é uma ótima base para uma camada de compatibilidade progressiva (mesmo que parcial) para facilitar adoção.
 
+Status inicial implementado no `@nextify/core`: já existe um módulo de shims (`nextApiShims`) cobrindo `headers()`, `cookies()`, `redirect()`, `permanentRedirect()` e `notFound()`, pensado para reduzir atrito em migrações incrementais.
+
 ### 3) Deploy Cloudflare “one command”
 
 Você já tem adapter de Cloudflare Workers, então o próximo passo natural é UX de CLI mais direta (ex.: comando único que prepara config + build + deploy), semelhante ao storytelling do vinext.

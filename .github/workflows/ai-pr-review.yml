@@ -34,7 +34,7 @@ jobs:
       - name: Build AI review
         if: steps.validate-key.outputs.has_key == 'true'
         id: ai-review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}

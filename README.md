@@ -393,3 +393,9 @@ Nextify.js is [MIT licensed](./LICENSE).
     <img src="https://img.shields.io/github/forks/RicardoOliver/Nextify.js?style=social" alt="GitHub Forks" />
   </a>
 </p>
+
+<br/>
+
+![Visualizações](https://komarev.com/ghpvc/?username=RicardoOliver-mensageria&color=00C853&style=flat-square&label=VISUALIZAÇÕES+DO+PROJETO)
+
+<br/>

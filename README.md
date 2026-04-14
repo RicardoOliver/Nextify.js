@@ -396,6 +396,6 @@ Nextify.js is [MIT licensed](./LICENSE).
 
 <br/>
 
-![Visualizações](https://komarev.com/ghpvc/?username=RicardoOliver-mensageria&color=00C853&style=flat-square&label=VISUALIZAÇÕES+DO+PROJETO)
+![Visualizações](https://views-counter.vercel.app/badge?pageId=RicardoOliver/Nextify.js)
 
 <br/>

@@ -11,7 +11,7 @@
     "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   },
   "dependencies": {
-    "react": "^19.2.6",
+    "react": "^19.2.7",
     "react-dom": "^19.2.6"
   }
 }

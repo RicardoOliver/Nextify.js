@@ -151,7 +151,7 @@ jobs:
 
       - name: Publish sticky comment
         if: steps.validate-key.outputs.has_key == 'true' && steps.ai-review.outputs.review_body != ''
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: ai-pr-review
           message: ${{ steps.ai-review.outputs.review_body }}

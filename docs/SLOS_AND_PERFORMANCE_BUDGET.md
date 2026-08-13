@@ -62,12 +62,12 @@ Template padrão: `docs/reliability-reports/REPORT_TEMPLATE.md`.
 - A metodologia aberta e reproduzível está em `docs/OPEN_BENCHMARK_METHODOLOGY.md` com pré-requisitos, comandos e limitações declaradas.
 - O relatório comparativo deve acompanhar release candidates para validação externa.
 
-## 7) Feedback loop de produção real (latência/TTFB/error rate)
+## 7) Feedback loop de confiabilidade com dados agregados (latência/TTFB/error rate)
 
 - Thresholds operacionais ficam versionados em `artifacts/observability/production-thresholds.v1.json`.
-- Snapshot de tráfego real é consolidado em `artifacts/observability/production-traffic.latest.json`.
+- Snapshot agregado e anonimizado por rota é consolidado em `artifacts/observability/production-traffic.latest.json`.
 - O script `npm run reliability:production-gate` compara p95 de TTFB/latência e taxa de erro das rotas críticas contra os thresholds.
-- O gate roda no CI (`Production reliability feedback loop`) e bloqueia merge quando houver regressão em tráfego real.
+- O gate roda no CI (`Production reliability feedback loop`) e bloqueia merge quando houver regressão nos dados agregados de rota.
 
 ## 8) Métricas DORA automatizadas
 

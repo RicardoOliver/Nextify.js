@@ -4,3 +4,8 @@ artifacts/dora/*
 !artifacts/dora/targets.v1.json
 dist/
 .nextify/
+.env
+.env.*
+!.env.example
+*.pem
+*.key

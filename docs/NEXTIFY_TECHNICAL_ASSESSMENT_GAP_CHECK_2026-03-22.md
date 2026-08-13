@@ -83,14 +83,14 @@ O diagnóstico técnico do documento descreve três gaps principais (release eng
 
 ## 4) Itens parcialmente criados ou ainda com gap
 
-### 4.1 “Feedback loop” de confiabilidade orientado a produção real
+### 4.1 “Feedback loop” de confiabilidade orientado por dados agregados
 - **Status:** ✅ Criado
-- **Leitura:** além do benchmark sintético, agora há gate dedicado de tráfego real para bloquear regressões de latência/TTFB e taxa de erro por rota crítica.
+- **Leitura:** além do benchmark sintético, agora há gate dedicado de dados agregados/anonimizados de rota para bloquear regressões de latência/TTFB e taxa de erro por rota crítica.
 - **Evidência:**
   - Script `reliability:production-gate` no `package.json`.
   - Implementação em `scripts/run-production-feedback-gate.mjs`.
   - Thresholds versionados em `artifacts/observability/production-thresholds.v1.json`.
-  - Snapshot de tráfego real em `artifacts/observability/production-traffic.latest.json`.
+  - Snapshot agregado e anonimizado em `artifacts/observability/production-traffic.latest.json`.
   - Execução no CI (`Production reliability feedback loop`) em `.github/workflows/ci.yml`.
 
 ### 4.2 Métricas de sucesso DORA operacionalizadas automaticamente

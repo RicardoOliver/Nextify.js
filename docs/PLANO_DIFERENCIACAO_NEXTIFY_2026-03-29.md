@@ -61,7 +61,7 @@
 
 ## Nextify Autopilot (core differentiator)
 
-**Proposta:** transformar o framework em um sistema que **otimiza a aplicação automaticamente com base em tráfego real**, em vez de depender de tuning manual.
+**Proposta:** transformar o framework em um sistema que **otimiza a aplicação automaticamente com base em sinais agregados e anonimizados de tráfego**, em vez de depender de tuning manual.
 
 ### Como funcionaria
 

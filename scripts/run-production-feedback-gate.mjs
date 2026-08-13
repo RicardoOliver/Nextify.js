@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 
 const cwd = process.cwd();
 
@@ -10,6 +10,7 @@ function readJson(path) {
 const trafficPath = join(cwd, 'artifacts', 'observability', 'production-traffic.latest.json');
 const thresholdsPath = join(cwd, 'artifacts', 'observability', 'production-thresholds.v1.json');
 const outputPath = join(cwd, 'artifacts', 'observability', 'production-feedback-report.latest.json');
+const displayPath = (path) => relative(cwd, path);
 
 if (!existsSync(trafficPath) || !existsSync(thresholdsPath)) {
   console.error('Dados de produção ausentes para o feedback loop.');
@@ -63,8 +64,8 @@ const failures = checks.filter((check) => check.status === 'fail');
 const report = {
   generatedAt: new Date().toISOString(),
   source: {
-    trafficPath,
-    thresholdsPath,
+    trafficPath: displayPath(trafficPath),
+    thresholdsPath: displayPath(thresholdsPath),
   },
   status: failures.length === 0 ? 'pass' : 'fail',
   summary: {
@@ -77,7 +78,7 @@ const report = {
 writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`);
 
 if (failures.length > 0) {
-  console.error('Feedback loop de produção falhou: regressões detectadas em tráfego real.');
+  console.error('Feedback loop de confiabilidade falhou: regressões detectadas nos dados agregados de rota.');
   for (const failure of failures) {
     const reasons = failure.reasons?.join('; ') ?? failure.reason;
     console.error(`- ${failure.routeId}: ${reasons}`);
@@ -85,4 +86,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`Feedback loop de produção aprovado. Relatório: ${outputPath}`);
+console.log(`Feedback loop de confiabilidade aprovado. Relatório: ${displayPath(outputPath)}`);

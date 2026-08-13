@@ -1,13 +1,13 @@
 {
   "generatedAt": "2026-03-22T17:34:57.883Z",
   "sources": {
-    "benchmarkPath": "/workspace/Nextify.js/artifacts/benchmarks/synthetic-benchmark.latest.json",
-    "baselinePath": "/workspace/Nextify.js/artifacts/benchmarks/synthetic-benchmark.baseline.v1.json",
-    "traceabilityPath": "/workspace/Nextify.js/artifacts/sbom/traceability.json",
-    "performanceBudgetPath": "/workspace/Nextify.js/packages/build/dist/performance-budget.json",
-    "auditPath": "/workspace/Nextify.js/docs/reliability-reports/latest-internal-audit.md",
-    "productionFeedbackPath": "/workspace/Nextify.js/artifacts/observability/production-feedback-report.latest.json",
-    "doraMetricsPath": "/workspace/Nextify.js/artifacts/dora/metrics.latest.json"
+    "benchmarkPath": "artifacts/benchmarks/synthetic-benchmark.latest.json",
+    "baselinePath": "artifacts/benchmarks/synthetic-benchmark.baseline.v1.json",
+    "traceabilityPath": "artifacts/sbom/traceability.json",
+    "performanceBudgetPath": "packages/build/dist/performance-budget.json",
+    "auditPath": "docs/reliability-reports/latest-internal-audit.md",
+    "productionFeedbackPath": "artifacts/observability/production-feedback-report.latest.json",
+    "doraMetricsPath": "artifacts/dora/metrics.latest.json"
   },
   "summary": {
     "syntheticBenchmarkStatus": "pass",

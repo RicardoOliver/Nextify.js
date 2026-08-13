@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "description": "Thresholds de produção para blindagem de latência/TTFB em tráfego real.",
+  "description": "Thresholds de confiabilidade para dados agregados e anonimizados por rota.",
   "routes": [
     {
       "routeId": "ssr-home",

@@ -57,7 +57,7 @@ jobs:
       - name: Performance regression gate (baseline)
         run: npm run benchmark:regression
 
-      - name: Production reliability feedback loop (real traffic gate)
+      - name: Production reliability feedback loop (aggregated route gate)
         run: npm run reliability:production-gate
 
       - name: DORA metrics gate

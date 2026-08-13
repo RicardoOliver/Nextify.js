@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 
 const cwd = process.cwd();
 
@@ -24,6 +24,7 @@ const performanceBudgetPath = join(cwd, 'packages', 'build', 'dist', 'performanc
 const auditPath = join(cwd, 'docs', 'reliability-reports', 'latest-internal-audit.md');
 const productionFeedbackPath = join(cwd, 'artifacts', 'observability', 'production-feedback-report.latest.json');
 const doraMetricsPath = join(cwd, 'artifacts', 'dora', 'metrics.latest.json');
+const displayPath = (path) => relative(cwd, path);
 
 const missing = [benchmarkPath, baselinePath, traceabilityPath, performanceBudgetPath, auditPath, productionFeedbackPath, doraMetricsPath].filter(
   (path) => !existsSync(path),
@@ -64,13 +65,13 @@ const scenarioRows = benchmark.scenarios.map((scenario) => {
 const payload = {
   generatedAt: new Date().toISOString(),
   sources: {
-    benchmarkPath,
-    baselinePath,
-    traceabilityPath,
-    performanceBudgetPath,
-    auditPath,
-    productionFeedbackPath,
-    doraMetricsPath,
+    benchmarkPath: displayPath(benchmarkPath),
+    baselinePath: displayPath(baselinePath),
+    traceabilityPath: displayPath(traceabilityPath),
+    performanceBudgetPath: displayPath(performanceBudgetPath),
+    auditPath: displayPath(auditPath),
+    productionFeedbackPath: displayPath(productionFeedbackPath),
+    doraMetricsPath: displayPath(doraMetricsPath),
   },
   summary: {
     syntheticBenchmarkStatus: benchmark.status,

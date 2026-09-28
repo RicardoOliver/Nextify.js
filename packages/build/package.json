@@ -9,6 +9,6 @@
     "lint": "node -e \"console.log('sem lint configurado neste pacote')\""
   },
    "dependencies": {
-     "esbuild": "^0.25.0"
+     "esbuild": "^0.28.2"
    }
 }

@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-03-29T16:36:44.324Z",
+  "narrative": {
+    "positioning": "IA com engenharia de verdade",
+    "statement": "A IA acelera a entrega, mas cada mudança relevante só entra após quality gates objetivos e revisão humana."
+  },
+  "metrics": {
+    "tests": {
+      "totalFiles": 22,
+      "unitFiles": 19,
+      "integrationFiles": 2,
+      "e2eFiles": 1,
+      "sample": [
+        "packages/build/tests/performanceBudget.test.ts",
+        "packages/build/tests/runBuild.integration.test.ts",
+        "packages/cli/tests/smoke.test.ts",
+        "packages/core/tests/adapters.test.ts",
+        "packages/core/tests/composeMiddleware.test.ts",
+        "packages/core/tests/csrfProtection.test.ts",
+        "packages/core/tests/enterpriseSecurity.test.ts",
+        "packages/core/tests/executeLoader.integration.test.ts",
+        "packages/core/tests/fileRouter.test.ts",
+        "packages/core/tests/nextApiShims.test.ts"
+      ]
+    },
+    "qualityGates": {
+      "lint": true,
+      "typecheck": true,
+      "tests": true,
+      "npmAudit": true,
+      "internalAudit": true,
+      "sbomProvenance": true
+    }
+  },
+  "evidence": {
+    "ciWorkflow": ".github/workflows/ci.yml",
+    "testDirectory": "packages/**/tests",
+    "engineeringHealthPanel": "artifacts/health/engineering-health-panel.json"
+  }
+}
